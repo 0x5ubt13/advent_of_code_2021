@@ -6,9 +6,16 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"time"
 )
 
+func timeTrack(start time.Time, name string) {
+	elapsed := time.Since(start)
+	log.Printf("%s took %s", name, elapsed)
+}
+
 func main() {
+	defer timeTrack(time.Now(), "main")
 	// Part 1
 	increases := 0
 	depths := getInput("./day_1/day_1_input.txt")
@@ -17,7 +24,7 @@ func main() {
 			increases += 1
 		}
 	}
-	fmt.Printf("Part 1: %v", increases)
+	fmt.Printf("Part 1: %v\n", increases)
 
 	// Part 2
 	partTwoIncreases := 0
@@ -33,8 +40,7 @@ func main() {
 			partTwoIncreases += 1
 		}
 	}
-	fmt.Printf("Part 2: %v", partTwoIncreases)
-
+	fmt.Printf("Part 2: %v\n", partTwoIncreases)
 }
 
 func getInput(filename string) []int64 {
