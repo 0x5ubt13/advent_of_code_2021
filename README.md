@@ -8,6 +8,6 @@ This year I will try to complete every day at least with my strongest suit (Pyth
 | [Day 1](./day_1)  |  [Python](./day_1/day_1.py)  |:heavy_check_mark:|
 |        |    [Go](./day_1/day_1.go)    |:heavy_check_mark:|
 | [Day 2](./day_2)  |  [Python](./day_2/day_2.py)  |:heavy_check_mark:|
-|        |    [Go]()    | :woozy_face: |
+|        |    [Go](./day_2/day_2.go)    | :heavy_check_mark: |
 | [Day 3](./day_3)  |  [Python](./day_3/day_3.py)  |:heavy_check_mark:|
 |        |    [Go]()    | :woozy_face:  |
