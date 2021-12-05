@@ -71,16 +71,14 @@ def part_1(drawn_numbers, parsed_boards):
 
 def part_2(drawn_numbers, parsed_boards):
     # Drawing numbers
-    completed_boards = []
-    playing = True
-    while playing == True:
-        for drawn in range(len(drawn_numbers)):
-            x, y = 0, 0
-            for board, board_values_dict in parsed_boards.items():
-                print(parsed_boards[board], completed_boards)
-                if parsed_boards[board] in completed_boards:
-                    continue
-                else:
+    def solve(drawn_numbers, parsed_boards):
+        playing = True
+        while playing == True:
+            d = -1
+            for drawn in range(len(drawn_numbers)):
+                d += 1
+                x, y = 0, 0
+                for board, board_values_dict in parsed_boards.items():
                     for columns, rows in board_values_dict.items():
                         z = 0
                         for number in rows:
@@ -93,15 +91,11 @@ def part_2(drawn_numbers, parsed_boards):
                                         for num in row:
                                             if int(num) != 100:
                                                 result += int(num)
-                                    print("Part 2: ", result * last)
-                                    print(f"Board {board} complete")
-                                    completed_boards.append(board)
-                                    # print(completed_boards)
-                                    if len(completed_boards) == len(parsed_boards):
-                                        print("Completed")
-                                        playing = False
-                                        break
-
+                                    part2 = result * last
+                                    # print(f"Board {board} complete")
+                                    playing = False
+                                    break
+                                
                                 if playing == False:
                                     break
                             z += 1
@@ -110,25 +104,29 @@ def part_2(drawn_numbers, parsed_boards):
                         y += 1
                         if y % 5 == 0:
                             y = 0
+                    if playing == False:
+                        break
+                    x += 1
+                    if x % 5 == 0:
+                        x = 0
                 if playing == False:
                     break
-                x += 1
-                if x % 5 == 0:
-                    x = 0
-            if playing == False:
-                break
-        break
-
+            break
+            
+        del parsed_boards[board]    
+        return drawn_numbers[d:], parsed_boards, part2
+    
+    # print(f"drawn numbers: {len(drawn_numbers)}, boards: {len(parsed_boards)}")
+    while len(parsed_boards) > 0:
+        drawn_numbers, parsed_boards, solution = solve(drawn_numbers, parsed_boards)
+        # print(f"drawn numbers: {len(drawn_numbers)}, boards: {len(parsed_boards)}")
+    print("Part 2: ", solution)
+    
 
 if __name__ == '__main__':
     data = get_input('./day_4/day_4_input.txt')
-    #test = get_input('./day_4/day_4_test_input.txt')
     d, l = make_boards(data)
     part_1(d, l)
     d, l = make_boards(data)
     part_2(d, l)
-
-    # 72268 too high
-    # 27010 too high
-    # 35594 too high
 
