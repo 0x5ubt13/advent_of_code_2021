@@ -19,65 +19,76 @@ def part_1(diagram, data):
         final = ins[1].split(',')
         # print(f"initial: x = {initial[0]}, y = {initial[1]} , final: x = {final[0]}, y = {final[1]}")
         # print(f"Initial: {ins[0]}, final: {ins[1]}")
-        initial_x, initial_y, final_x, final_y = int(initial[0]), int(initial[1]), int(final[0]), int(final[1])
+        x1, y1, x2, y2 = int(initial[0]), int(initial[1]), int(final[0]), int(final[1])
         
-        if initial_x == final_x or initial_y == final_y:
-            if initial_x == final_x:
-                if initial_y < final_y:
-                    for coord in range(initial_y, final_y +1):
-                        diagram[(initial_x, coord)] += 1
-                        # print(f"diagram[(x: {initial_x}, y: {coord})] += 1")
-                elif initial_y > final_y:
-                    for coord in range(initial_y, final_y -1, -1):
-                        diagram[(initial_x, coord)] += 1
-                        # print(f"diagram[(x: {initial_x}, y: {coord})] += 1")
-            elif initial_y == final_y:
-                if initial_x < final_x:
-                    for coord in range(initial_x, final_x +1):
-                        diagram[(coord, initial_y)] += 1
-                        # print(f"diagram[(x: {coord}, y: {initial_y})] += 1")
-                elif initial_x > final_x:
-                    for coord in range(initial_x, final_x -1, -1):
-                        diagram[(coord, initial_y)] += 1
-                        # print(f"diagram[(x: {coord}, y: {initial_y})] += 1")
+        if x1 == x2 or y1 == y2:
+            if x1 == x2:
+                if y1 < y2:
+                    for coord in range(y1, y2 +1):
+                        diagram[(x1, coord)] += 1
+                elif y1 > y2:
+                    for coord in range(y1, y2 -1, -1):
+                        diagram[(x1, coord)] += 1
+            elif y1 == y2:
+                if x1 < x2:
+                    for coord in range(x1, x2 +1):
+                        diagram[(coord, y1)] += 1
+                elif x1 > x2:
+                    for coord in range(x1, x2 -1, -1):
+                        diagram[(coord, y1)] += 1
+                        # print(f"diagram[(x: {coord}, y: {y1})] += 1")
         # Part 2
-        elif initial_x != final_x and initial_y != final_y:
-            if initial_y < final_y:
-                if initial_x < final_x:
-                    for coord in range(initial_x, final_x +1):
-                        if initial_x < initial_y:
-                            diagram[(coord, (initial_y - initial_x) + coord)] += 1
-                            # print(f"diagram[(x: {coord}, y: {(initial_y - initial_x) + coord})] += 1")
-                        elif initial_x > initial_y:
-                            diagram[(coord, (initial_x - initial_y))] += 1
-                            # print(f"diagram[(x: {coord}, y: {(initial_x - initial_y) + coord})] += 1")
-                elif initial_x > final_x:
-                    print(f"initial: x = {initial[0]}, y = {initial[1]} , final: x = {final[0]}, y = {final[1]}")
-                    print(f"Initial: {ins[0]}, final: {ins[1]}")
-                    for coord in range(initial_y, final_y +1):
-                        if initial_x < initial_y:    
-                            diagram[(initial_x, coord)] += 1
-                            print(f"diagram[(x: {coord}, y: {coord})] += 1")
-                            # print(f"diagram[(x: {initial_x}, y: {coord})] += 1")
+        else: #x1 != x2 and y1 != y2: # diagonal
+            if x1 > x2 and y1 > y2: # Si son todos pabajo
+                for coord in range(x1, x2 -1, -1):
+                    if x1 > y1: # si x es mayor que y
+                        diagram[(coord, coord - (x1 - y1))] += 1
+                    elif x1 < y1: # si x es menor que y
+                        diagram[(coord - (y1 - x1), coord)] += 1
+                        print(f"initial: x = {initial[0]}, y = {initial[1]} , final: x = {final[0]}, y = {final[1]}")
+                        print(f"Initial: {ins[0]}, final: {ins[1]}")
+                        print(f"diagram[(x: {coord - (y1 - x1)}, y: {coord})] += 1")
+
+                        
+            elif x1 < x2 and y1 < y2: # Si son todos para arriba
+                for coord in range(x1, x2):
+                    if x1 < y1:
+                        diagram[(coord, coord)] += 1
+                        
+                        # print(f"initial: x = {initial[0]}, y = {initial[1]} , final: x = {final[0]}, y = {final[1]}")
+                        # print(f"Initial: {ins[0]}, final: {ins[1]}")
+                        # print(f"diagram[(x: {coord - (y1 - x1)}, y: {coord})] += 1")
+                pass 
+            elif x1 < x2 and y1 > y2: # Si es x para arriba e y para abajo
+                pass
+            elif x1 > x2 and y1 < y2: # Si es x para abajo e y para arriba
+                pass
+                # print(f"initial: x = {initial[0]}, y = {initial[1]} , final: x = {final[0]}, y = {final[1]}")
+                # print(f"Initial: {ins[0]}, final: {ins[1]}")
+            elif x1 > x2 and y1 < y2:
+                pass
+                # print(f"diagram[(x: {x1}, y: {coord})] += 1")
+            else:
+                pass
 
                     
 
 
 
-            #     for coord in range(initial_y, final_y +1):
-            #         diagram[(initial_x, coord)] += 1
-            # elif initial_y > final_y:
-            #     for coord in range(initial_y, final_y -1, -1):
-            #         diagram[(initial_x, coord)] += 1
+            #     for coord in range(y1, y2 +1):
+            #         diagram[(x1, coord)] += 1
+            # elif y1 > y2:
+            #     for coord in range(y1, y2 -1, -1):
+            #         diagram[(x1, coord)] += 1
 
-            # elif initial_y == final_y:
-            #     if initial_x < final_x:
-            #         for coord in range(initial_x, final_x +1):
-            #             diagram[(coord, initial_y)] += 1
+            # elif y1 == y2:
+            #     if x1 < x2:
+            #         for coord in range(x1, x2 +1):
+            #             diagram[(coord, y1)] += 1
 
-            #     elif initial_x > final_x:
-            #         for coord in range(initial_x, final_x -1, -1):
-            #             diagram[(coord, initial_y)] += 1
+            #     elif x1 > x2:
+            #         for coord in range(x1, x2 -1, -1):
+            #             diagram[(coord, y1)] += 1
 
     # result = 0
     # for v in diagram.values():
