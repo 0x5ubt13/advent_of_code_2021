@@ -54,13 +54,14 @@ def part_1(diagram, data):
                 for coord in range(x1, x2):
                     if x1 < y1:
                         diagram[(coord, coord)] += 1
-                        
+
                         # print(f"initial: x = {initial[0]}, y = {initial[1]} , final: x = {final[0]}, y = {final[1]}")
                         # print(f"Initial: {ins[0]}, final: {ins[1]}")
                         # print(f"diagram[(x: {coord - (y1 - x1)}, y: {coord})] += 1")
                 pass 
             elif x1 < x2 and y1 > y2: # Si es x para arriba e y para abajo
-                pass
+                
+                
             elif x1 > x2 and y1 < y2: # Si es x para abajo e y para arriba
                 pass
                 # print(f"initial: x = {initial[0]}, y = {initial[1]} , final: x = {final[0]}, y = {final[1]}")
