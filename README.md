@@ -25,3 +25,5 @@ This year I will try to complete every day at least with my strongest suit (Pyth
 |        |    [Go]()    | :woozy_face:  ||
 | [Day 10](./day_10)  |  [Python](./day_10/day_10.py)  |:heavy_check_mark:|:star2::star2:|
 |        |    [Go]()    | :woozy_face:  ||
+| [Day 11](./day_11)  |  [Python](./day_10/day_11.py)  |:woozy_face:|:woozy_face:|
+|        |    [Go]()    | :woozy_face:  ||
