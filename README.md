@@ -27,3 +27,5 @@ This year I will try to complete every day at least with my strongest suit (Pyth
 |        |    [Go]()    | :woozy_face:  ||
 | [Day 11](./day_11)  |  [Python](./day_10/day_11.py)  |:woozy_face:|:woozy_face:|
 |        |    [Go]()    | :woozy_face:  ||
+
+day 12 -> surrender
