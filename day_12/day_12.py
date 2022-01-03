@@ -16,15 +16,13 @@ def possibilities(data):
 
 def part_1(data):
     paths = []
-
-    for i in range(500):
-        p = possibilities(data)
-        burnt = []
-        path = []
-        for line in data:
-            
-            
-        paths.append(path)
+    x = 1
+    for i in data:
+        print(f"Path {x}")
+        print(f"Pos {i}")
+        for j in i:
+            print(j)
+        x += 1
 
 
 if __name__ == '__main__':
