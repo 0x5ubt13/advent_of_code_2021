@@ -57,4 +57,3 @@ def solve(bin_dict, bin_list):
 if __name__ == '__main__':
     d, l = get_data("./day_3/day_3_input.txt")
     solve(d, l)
-    
