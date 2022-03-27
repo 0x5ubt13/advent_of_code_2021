@@ -1,34 +1,34 @@
 package main
 
 import (
-	"fmt"
-	"os"
 	"bufio"
+	"fmt"
 	"io"
+	"os"
 	"strconv"
 	//"strings"
 )
 
-func main () {
+func main() {
 	data := getLines("./day_3_input.txt")
-	partOne(data)
+	// partOne(data)
+	partTwo(data)
 }
 
+// Part 1 solution
 func partOne(data []string) {
 	commonZeroes := make(map[int]int)
 	commonOnes := make(map[int]int)
-	mostCommon := make(map[int]int)
-	var mc string
-	lessCommon := make(map[int]int)
-	var lc string
+	var mostCommon, leastCommon string
 
-	for i, r := range data {
+	// Parse most common bits bit by bit
+	for _, r := range data {
 		// whole binary numbers inside data.
-		fmt.Println(i, r) 
+		//fmt.Println(i, r) //test
 		for j, c := range r {
 			// binary numbers index inside the numbers
 			// string(c) to avoid printing runes
-			//fmt.Println(j, string(c)) 
+			//fmt.Println(j, string(c)) //test
 			if string(c) == "0" {
 				commonZeroes[j] += 1
 			} else {
@@ -36,29 +36,56 @@ func partOne(data []string) {
 			}
 		}
 	}
+
 	for k := 0; k < len(commonOnes); k++ {
 		if commonOnes[k] > commonZeroes[k] {
-			mostCommon[k] = 1
-			mc += "1"
-			lessCommon[k] = 0
-			lc += "0"
+			mostCommon += "1"
+			leastCommon += "0"
 		} else {
-			mostCommon[k] = 0
-			mc += "0"
-			lessCommon[k] = 1
-			lc += "1"
+			mostCommon += "0"
+			leastCommon += "1"
 		}
 	}
-	most, err := strconv.ParseInt(mc, 2, 10)
+
+	most, err := strconv.ParseInt(mostCommon, 2, 64)
 	chk(err)
 
-	fmt.Println(most, lc)
+	least, err := strconv.ParseInt(leastCommon, 2, 64)
+	chk(err)
 
-
-
-	
+	fmt.Println("Part 1 solution ->", most*least)
 }
 
+// Part 2 solution
+func partTwo(data []string) {
+	oxygen := make([]string, 0) 
+	co2 := make([]string, 0)
+	commonOnes := make(map[int]int)
+	commonZeroes := make(map[int]int)
+
+	// Making working copies of original data
+	for _, v := range data {
+		oxygen = append(oxygen, v)
+		co2 = append(co2, v)
+	}
+
+	// Oxygen values (common 1)
+	// Find the most common bit and eliminate the rest
+	for i := 0; i < 12; i++ {
+		for _, n := range oxygen {
+			for j, r := range n {
+				if string(r) == "0" {
+					commonZeroes[j] += 1
+				} else {
+					commonOnes[j] += 1
+				}
+			}
+		}
+		fmt.Println(commonOnes)
+	}
+}
+
+// Getting input
 func getLines(filename string) []string {
 	f, err := os.Open(filename)
 	chk(err)
@@ -80,6 +107,7 @@ func getLines(filename string) []string {
 	return data
 }
 
+// Condensing error handling
 func chk(e error) {
 	if e != nil {
 		panic(e)
