@@ -58,31 +58,63 @@ func partOne(data []string) {
 
 // Part 2 solution
 func partTwo(data []string) {
-	oxygen := make([]string, 0) 
-	co2 := make([]string, 0)
-	commonOnes := make(map[int]int)
-	commonZeroes := make(map[int]int)
+	o2 := make([]string, len(data))
+	co2 := make([]string, len(data))
 
-	// Making working copies of original data
-	for _, v := range data {
-		oxygen = append(oxygen, v)
-		co2 = append(co2, v)
-	}
+	// Duplicate data for the condition on the first iteration to be met
+	copy(o2, data)
+	copy(co2, data)
+	fmt.Println(o2, co2)
+	
 
-	// Oxygen values (common 1)
 	// Find the most common bit and eliminate the rest
 	for i := 0; i < 12; i++ {
-		for _, n := range oxygen {
+		// Reset the following vars every iteration
+		var zeroes, ones int
+
+		// Check which is the most common, either 0 or 1
+		for _, n := range data {
 			for j, r := range n {
-				if string(r) == "0" {
-					commonZeroes[j] += 1
-				} else {
-					commonOnes[j] += 1
+				if j == i {
+					if string(r) == "0" {
+						zeroes += 1		
+					} else {
+						ones += 1
+					}
 				}
 			}
 		}
-		fmt.Println(commonOnes)
+
+		//fmt.Println(zeroes, ones)
+
+		// Save only those who fit the criteria
+		for _, n := range data {
+			if ones >= zeroes {
+				//fmt.Println(string(n[i]))
+				check := stringInSlice(n, o2)
+				fmt.Println(check)
+				if string(n[i]) == "1" && check == true {
+					
+				} else{
+					removeFromSlice(o2, n)
+				}
+			} else {
+				// Save zeroes
+				check := stringInSlice(n, co2)
+				if string(n[i]) == "0" && check == true {
+					
+				} else {
+					removeFromSlice(co2, n)
+				}
+			}
+		}
 	}
+
+		fmt.Println(len(o2), len(co2))
+
+	fmt.Println(o2, co2)
+
+	fmt.Println("Part 2 solution ->")
 }
 
 // Getting input
@@ -105,6 +137,27 @@ func getLines(filename string) []string {
 	}
 
 	return data
+}
+
+// Utility function similar to Pythons "if x in list"
+func stringInSlice(x string, slice []string) bool {
+	for _, b := range slice {
+		if b == x {
+			return true
+		}
+	}
+	return false
+}
+
+
+
+func removeFromSlice(s []string, r string) []string {
+    for i, v := range s {
+        if v == r {
+            return append(s[:i], s[i+1:]...)
+        }
+    }
+    return s
 }
 
 // Condensing error handling
