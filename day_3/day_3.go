@@ -6,12 +6,11 @@ import (
 	"io"
 	"os"
 	"strconv"
-	//"strings"
 )
 
 func main() {
 	data := getLines("./day_3_input.txt")
-	// partOne(data)
+	partOne(data)
 	partTwo(data)
 }
 
@@ -24,11 +23,8 @@ func partOne(data []string) {
 	// Parse most common bits bit by bit
 	for _, r := range data {
 		// whole binary numbers inside data.
-		//fmt.Println(i, r) //test
 		for j, c := range r {
-			// binary numbers index inside the numbers
-			// string(c) to avoid printing runes
-			//fmt.Println(j, string(c)) //test
+			// binary numbers index inside the numbers - string(c) to avoid printing runes
 			if string(c) == "0" {
 				commonZeroes[j] += 1
 			} else {
@@ -58,63 +54,75 @@ func partOne(data []string) {
 
 // Part 2 solution
 func partTwo(data []string) {
-	o2 := make([]string, len(data))
-	co2 := make([]string, len(data))
-
-	// Duplicate data for the condition on the first iteration to be met
-	copy(o2, data)
-	copy(co2, data)
-	fmt.Println(o2, co2)
-	
+	var oxygen, dioxide int64
+	var common0, common1 []string
+	o2 := data
+	co2 := data
 
 	// Find the most common bit and eliminate the rest
-	for i := 0; i < 12; i++ {
-		// Reset the following vars every iteration
-		var zeroes, ones int
-
-		// Check which is the most common, either 0 or 1
-		for _, n := range data {
-			for j, r := range n {
-				if j == i {
-					if string(r) == "0" {
-						zeroes += 1		
-					} else {
-						ones += 1
-					}
-				}
+	// Oxygen
+	column := 0
+	for {
+		// Separate, then check which is the most common, either 0 or 1
+		for _, n := range o2 {
+			if string(n[column]) == "1" {
+				common1 = append(common1, n)
+			} else {
+				common0 = append(common0, n)
 			}
 		}
 
-		//fmt.Println(zeroes, ones)
+		column++
 
 		// Save only those who fit the criteria
-		for _, n := range data {
-			if ones >= zeroes {
-				//fmt.Println(string(n[i]))
-				check := stringInSlice(n, o2)
-				fmt.Println(check)
-				if string(n[i]) == "1" && check == true {
-					
-				} else{
-					removeFromSlice(o2, n)
-				}
-			} else {
-				// Save zeroes
-				check := stringInSlice(n, co2)
-				if string(n[i]) == "0" && check == true {
-					
-				} else {
-					removeFromSlice(co2, n)
-				}
-			}
+		if len(common1) >= len(common0) {
+			// Save ones
+			o2 = common1
+		} else {
+			// Save zeroes
+			o2 = common0
+		}
+		
+		// Reset
+		common0 = common0[:0]
+		common1 = common1[:0]
+
+		if len(o2) == 1 {
+			oxygen, _ = strconv.ParseInt(o2[0], 2, 64)
+			break
 		}
 	}
-
-		fmt.Println(len(o2), len(co2))
-
-	fmt.Println(o2, co2)
-
-	fmt.Println("Part 2 solution ->")
+	
+	// Dioxide -> repeat
+	column = 0 
+	for {
+		for _, n := range co2 {
+			if string(n[column]) == "1" {
+				common1 = append(common1, n)
+			} else {
+				common0 = append(common0, n)
+			}
+		}
+		
+		column++
+			
+		if len(common1) >= len(common0) {
+			co2 = common0
+		} else {
+			co2 = common1
+		}
+			
+		if len(co2) == 1 {
+			dioxide, _ = strconv.ParseInt(co2[0], 2, 64)
+			break
+		}
+			
+		// Reset
+		common0 = common0[:0]
+		common1 = common1[:0]
+	}
+			
+	fmt.Println("Part 2 solution ->", oxygen * dioxide)
 }
 
 // Getting input
@@ -122,42 +130,21 @@ func getLines(filename string) []string {
 	f, err := os.Open(filename)
 	chk(err)
 	defer f.Close()
-
+	
 	data := make([]string, 0)
-
+	
 	reader := bufio.NewReader(f)
-
+	
 	for {
 		line, _, err := reader.ReadLine()
 		if err == io.EOF {
 			break
 		}
-
+		
 		data = append(data, string(line))
 	}
-
+	
 	return data
-}
-
-// Utility function similar to Pythons "if x in list"
-func stringInSlice(x string, slice []string) bool {
-	for _, b := range slice {
-		if b == x {
-			return true
-		}
-	}
-	return false
-}
-
-
-
-func removeFromSlice(s []string, r string) []string {
-    for i, v := range s {
-        if v == r {
-            return append(s[:i], s[i+1:]...)
-        }
-    }
-    return s
 }
 
 // Condensing error handling
