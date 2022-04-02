@@ -8,50 +8,76 @@ import (
 )
 
 func main() {
-	instructions := getPuzzleInput("./day_5_test.txt")
+	diagram := drawDiagram()
+	diagram.print()
 	
-	diagram := drawDiagram(getMaxValue(instructions))
-	fmt.Println(diagram)
+	instructions := getPuzzleInput("./day_5_test.txt")
 
-	// Every even index is "x1, y1" 
-	// Every odd  index is "x2, y2"
-	for i, l := range instructions {
+	var x1, x2, y1, y2 int
+	
+	for i, line := range instructions {
 		if i % 2 == 0 {
-			fmt.Printf("x1 = %v, y1 = %v  ", string(l[0]), string(l[2]))
-		} else {	
-			fmt.Printf("x2 = %v, y2 = %v\n", string(l[0]), string(l[2]))
+			// Every even index is "x1, y1" 
+			x1, _ = strconv.Atoi(string(line[0]))
+			y1, _ = strconv.Atoi(string(line[2]))
+			fmt.Printf("x1 = %v, y1 = %v, ", x1, y1)
+		} else {
+			// Every odd index is "x2, y2"
+			x2, _ = strconv.Atoi(string(line[0]))
+			y2, _ = strconv.Atoi(string(line[2]))
+			fmt.Printf("x2 = %v, y2 = %v\n", x2, y2)
+		}
+
+		if i % 2 != 0 && i != 0 {
+			// Trigger only every second iteration to make sure we have updated x and y values
+			diagram.update(x1, x2, y1, y2)
+			diagram.print()
 		}
 	}
+
+	// ins := [4]int{x1, x2, y1, y2}
 }
 
-func drawDiagram(max int) map[int]int {
-	diagram := make(map[int]int)
-	for i := 0; i < max; i++ {
-		for j := 0; j < max; j++ {
-			diagram[i] = 0
+type Diagram map[int][]int
+
+func (d Diagram) update(x1, x2, y1, y2 int) {
+	// X axis
+	if x1 == x2 {
+		if y1 > y2 {
+			// Downwards
+			for i := y2; i < y1; i++ {
+				d[x1][i] += 1
+			}
+		} else {
+			// Upwards
+			for i := y2; i > y1; i-- {
+				d[x1][i] += 1
+			}
 		}
+
+	}
+	// Y axis
+	if y1 == y2 {
+	}
+	// Diagonal
+}
+
+func (d Diagram) print() {
+	for index, row := range d {
+		fmt.Println(index, row)
+	}
+} 
+
+func drawDiagram() Diagram {
+	diagram := make(map[int][]int)
+	rows := make([]int, 10)
+	
+	for i := 0; i < 10; i++ {
+		diagram[i] = rows
 	}
 
 	return diagram
 }
-
-func getMaxValue(instructions []string) int {
-	// Get max value to draw the diagram
-	max := 0
-
-	for _, l := range instructions { 
-		for _, r := range l {	
-			i, _ := strconv.Atoi(string(r))
-
-			if i > max {
-				max = i
-			}
-		}
-	}
-
-	return max
-}
-
 
 func getPuzzleInput(filename string) []string {
 	bytes, err := ioutil.ReadFile(filename)
