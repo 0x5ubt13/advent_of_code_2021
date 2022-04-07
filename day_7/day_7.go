@@ -27,22 +27,22 @@ func solve(crabs []int) {
 				steps = i - crab
 				fuel += steps
 				premiumFuel += steps
-			} else if {
-				steps := crab - i
+
+			} else if i < crab {
+				steps = crab - i
 				fuel += steps
 				premiumFuel += steps
 			}
-	
-			for s := 0; s < steps + 1; s++{
+			
+			for s := 0; s < steps; s++{
 				premiumFuel += s
 			}
-				
+			
 		}
 		petrolStation[i] = fuel
 		premiumPetrolStation[i] = premiumFuel
 	}
-	fmt.Println(premiumPetrolStation)
-
+	
 	min = petrolStation[0]
 	for _, v := range petrolStation {
 		if v < min {
