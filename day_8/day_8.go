@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	_, digits := getPuzzleInput("./day_8_input.txt")
+	signals, digits := getPuzzleInput("./day_8_input.txt")
 	
 	var ones, fours, sevens, eights int
 	hits := 0
@@ -32,6 +32,13 @@ func main() {
 	part1 := ones + fours + sevens + eights
 
 	fmt.Println("Part 1 ->", part1)
+
+	// signals[0] pairs with digits[0]
+	for i:= 0; i < len(signals); i++ {
+		for _, digit := range digits[i] {
+
+		}
+	}
 }
 
 func getPuzzleInput(filename string) ([]string, []string) {
