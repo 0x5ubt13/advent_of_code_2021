@@ -33,11 +33,51 @@ func main() {
 
 	fmt.Println("Part 1 ->", part1)
 
+	// Part 2
+	decoding := make(map[string]int, len(signals)
+	decoded := make(map[int]int, len(signals))
+
 	// signals[0] pairs with digits[0]
 	for i:= 0; i < len(signals); i++ {
-		for _, digit := range digits[i] {
 
+		for _, signal := range signals {
+			switch len(signal) {
+			case 2: // 1
+				decoding[signal] = 1
+			case 3: // 7
+				decoding[signal] = 7
+			case 4: // 4
+				decoding[signal] = 4
+			case 5: // 2, 3, 5
+				for k, v := range decoding { 
+					match := 0
+					if v == 1 { // 3
+						for _, letter := range k {
+							for _, lett := range signal {
+								if letter == lett {
+									match += 1
+								}
+							}
+						}
+
+						if match == 2 {
+							decoding[signal] = 3
+						}
+
+					} else if v == 4 || v == 7 {
+						
+					}
+				}
+
+			case 6: // 0, 6, 9 
+
+			case 7: // 8
+				decoding[signal] = 8
+			case 
+			}
 		}
+
+		
 	}
 }
 
