@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"io/ioutil"
 	"strings"
+	"strconv"
 )
 
 func main() {
 	signals, digits := getPuzzleInput("./day_8_input.txt")
 	
-	var ones, fours, sevens, eights int
-	hits := 0
+	var ones, fours, sevens, eights, match, hits, checks, part1, part2 int
 
 	for _, digit := range digits {
 		if len(digit) == 3 || len(digit) == 2 || len(digit) == 4 || len(digit) == 7 {
@@ -29,13 +29,14 @@ func main() {
 		}
 	}
 
-	part1 := ones + fours + sevens + eights
+	part1 = ones + fours + sevens + eights
 
 	fmt.Println("Part 1 ->", part1)
 
 	// Part 2
-	decoding := make(map[string]int, len(signals)
-	decoded := make(map[int]int, len(signals))
+	decoding := make(map[string]int, len(signals))
+	// decoded := make(map[int]int, len(signals))
+	decoded := make([]string, len(signals))
 
 	// signals[0] pairs with digits[0]
 	for i:= 0; i < len(signals); i++ {
@@ -50,8 +51,9 @@ func main() {
 				decoding[signal] = 4
 			case 5: // 2, 3, 5
 				for k, v := range decoding { 
-					match := 0
 					if v == 1 { // 3
+						checks += 1
+						match = 0
 						for _, letter := range k {
 							for _, lett := range signal {
 								if letter == lett {
@@ -62,23 +64,98 @@ func main() {
 
 						if match == 2 {
 							decoding[signal] = 3
+							break
 						}
 
 					} else if v == 4 || v == 7 {
-						
+						match = 0
+						checks += 1
+						for _, letter := range k {
+							for _, lett := range signal {
+								if letter == lett {
+									match += 1
+								}
+							}
+						}
+
+						if v == 4 && match == 3 || v == 7 && match == 2 {
+							decoding[signal] = 4
+							break
+						}
+
+					} else {
+						if checks >= 2 {
+							decoding[signal] = 2
+							checks = 0
+							break
+						}
 					}
 				}
 
 			case 6: // 0, 6, 9 
+				for k, v := range decoding {
+					if v == 7 || v == 4 { // 9
+						match = 0
+						checks += 1
+						for _, letter := range k {
+							for _, lett := range signal {
+								if letter == lett {
+									match += 1
+								}
+							}
+						}
+
+						if v == 7 && match == 3 || v == 4 && match == 4 {
+							decoding[signal] = 9
+							break
+						} 
+
+					} else if v == 1 {
+						match = 0
+						checks += 1
+						for _, letter := range k {
+							for _, lett := range signal {
+								if letter == lett {
+									match += 1
+								}
+							}
+						}
+
+						if match == 2 {
+							decoding[signal] = 0
+							break
+						}
+					} else {
+						if checks >= 2 {
+							decoding[signal] = 6
+							checks = 0
+							break
+						}
+					}
+				}
 
 			case 7: // 8
 				decoding[signal] = 8
-			case 
 			}
 		}
 
-		
+		for _, v := range decoding {
+			decoded = append(decoded, strconv.Itoa(v))
+		}
+
+		decodedNumber, err := strconv.Atoi(strings.Join(decoded, " "))
+		chkErr(err)
+
+		part2 += decodedNumber
+
+
 	}
+
+	fmt.Println("Part 2 ->", part2)
+	
+
+
+
 }
 
 func getPuzzleInput(filename string) ([]string, []string) {
