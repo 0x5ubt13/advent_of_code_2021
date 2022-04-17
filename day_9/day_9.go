@@ -8,11 +8,11 @@ import (
 )
 
 func main() {
-	heightMap, shadowMap := getPuzzleInput("9.test")
+	heightMap, _ := getPuzzleInput("9.test")
 
-	partOne(heightMap)
-	partTwo(heightMap, shadowMap)
-
+	// partOne(heightMap)
+	// partTwo(heightMap, shadowMap)
+	smarterPartOne(heightMap)
 }
 
 func partOne(heightMap map[int][]int) {
@@ -146,76 +146,94 @@ func partOne(heightMap map[int][]int) {
 
 }
 
-func partTwo(heightMap map[int][]int, shadowMap map[int][]bool) {
-	for row := 0; row < len(heightMap); row++ {
-		// Outer loop 
-		for column := 0; column < len(heightMap[0]); column++ {
-			// Inner loop. Column hit. Print where are we
-			// fmt.Println("Row", row, "Column", column, "->", heightMap[row][column], shadowMap[row][column])
-			
-			// intPointer := heightMap[row][column]
-			// boolPointer := shadowMap[row][column]
-			// basinPointer := heightmap[row][column]
-			// basinCounter := 0
-
-			// Start row conditions:
-			if row == 0 {
-				// Top row. Condition -> no up
-
-				// Start column conditions:
-				if column == 0 {
-					// First column. Condition -> no left
-				} else if column == len(heightMap[0]) - 1 {
-					// Last column. Condition -> no right
-				} else {
-					// Any other column in the middle
-				}
-
-			} else if row == len(heightMap) - 1 { 
-				// Bottom row. Condition -> no down
-
-				// Start column conditions:
-				if column == 0 {
-					// First column. Condition -> no left
-				} else if column == len(heightMap[0]) - 1 {
-					// Last column. Condition -> no right
-				} else {
-					// Any other column in the middle
-
-				}
-
-			} else {
-				// Any other row in the middle. Both up and down operative
-
-				// Start column conditions:
-				if column == 0 {
-					// First column. Condition -> no left
-				} else if column == len(heightMap[0]) - 1 {
-					// Last column. Condition -> no right
-				} else {
-					// Any other column in the middle
-
-					up 		:= heightMap[row-1][column]
-					down	:= heightMap[row+1][column]
-					left	:= heightMap[row][column-1]
-					right	:= heightMap[row][column+1]
-
-				}
-			}
-
-			// Create an indefinite loop
-			// if any of the surrounding are lower than the pointer,
-
-			// Idea -> all basins are surrounded by 9s
-
+func smarterPartOne(heightMap map[int][]int) {
+	for y := 0; y < len(heightMap); y++ {
+		for x := 0; x < len(heightMap[y]); x++ {
+			fmt.Println("Row", y, "Column", x, "->", heightMap[y][x])
 		}
-
-		// end of row
-	} 
-
-	// end of matrix
-
+	}
 }
+
+// func partTwo(heightMap map[int][]int, shadowMap map[int][]bool) {
+// 	for row := 0; row < len(heightMap); row++ {
+// 		for column := 0; column < len(heightMap[0]); column++ {
+// 			// Inner loop. Column hit. Print where are we
+// 			// fmt.Println("Row", row, "Column", column, "->", heightMap[row][column], shadowMap[row][column])
+			
+// 			// intPointer := heightMap[row][column]
+// 			// boolPointer := shadowMap[row][column]
+// 			// basinPointer := heightmap[row][column]
+// 			// basinCounter := 0
+
+// 			// Start row conditions:
+// 			if row == 0 {
+// 				// Top row. Condition -> no up
+
+// 				// Start column conditions:
+// 				if column == 0 {
+// 					// First column. Condition -> no left
+// 				} else if column == len(heightMap[0]) - 1 {
+// 					// Last column. Condition -> no right
+// 				} else {
+// 					// Any other column in the middle
+// 				}
+
+// 			} else if row == len(heightMap) - 1 { 
+// 				// Bottom row. Condition -> no down
+
+// 				// Start column conditions:
+// 				if column == 0 {
+// 					// First column. Condition -> no left
+// 				} else if column == len(heightMap[0]) - 1 {
+// 					// Last column. Condition -> no right
+// 				} else {
+// 					// Any other column in the middle
+
+// 				}
+
+// 			} else {
+// 				// Any other row in the middle. Both up and down operative
+
+// 				// Start column conditions:
+// 				if column == 0 {
+// 					// First column. Condition -> no left
+// 				} else if column == len(heightMap[0]) - 1 {
+// 					// Last column. Condition -> no right
+// 				} else {
+// 					// Any other column in the middle
+
+// 					up 		:= heightMap[row-1][column]
+// 					down	:= heightMap[row+1][column]
+// 					left	:= heightMap[row][column-1]
+// 					right	:= heightMap[row][column+1]
+
+// 				}
+// 			}
+
+// 			// Create an indefinite loop:
+// 			// 		if our number is not 9:
+// 			// 			if any of the surrounding are not 9 -> make it true in the shadowmap & sum 1 to basin counter
+// 			//				start going over the true positions. Change the basin pointer to the true positions and check above conditions
+// 			//						
+			
+// 			// all basins are surrounded by 9s
+
+// 			// for {
+// 			// 	if {
+// 			// 		// Part 2 condition
+// 			// 	}
+
+// 			// 	break
+// 			// }
+
+// 		}
+
+// 		// end of row
+// 	} 
+
+// 	// end of matrix
+
+// }
 
 
 func getPuzzleInput(filename string) (map[int][]int, map[int][]bool) {
