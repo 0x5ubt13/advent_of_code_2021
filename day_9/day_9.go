@@ -8,11 +8,12 @@ import (
 )
 
 func main() {
-	heightMap, _ := getPuzzleInput("9.test")
+	heightMap, _ := getPuzzleInput("9.in")
 
 	// partOne(heightMap)
 	// partTwo(heightMap, shadowMap)
 	smarterPartOne(heightMap)
+	smarterPartTwo(heightMap)
 }
 
 func partOne(heightMap map[int][]int) {
@@ -138,7 +139,7 @@ func partOne(heightMap map[int][]int) {
 			}
 		}
 
-		// end of row
+		// end of row  
 	} 
 
 	// end of matrix
@@ -147,12 +148,83 @@ func partOne(heightMap map[int][]int) {
 }
 
 func smarterPartOne(heightMap map[int][]int) {
+	maxY := len(heightMap)
+	maxX := len(heightMap[0])
+	riskRating := 0
+
 	for y := 0; y < len(heightMap); y++ {
 		for x := 0; x < len(heightMap[y]); x++ {
 			fmt.Println("Row", y, "Column", x, "->", heightMap[y][x])
+			pointer := heightMap[y][x]
+
+			// if not uppermost row and "up" is greater or equal than the pointer, pass
+			if y > 0 && heightMap[y-1][x] <= pointer {
+				
+				continue
+			}
+
+			// if not bottommost row and "down" is greater or equal than the pointer, pass
+			if y < maxY-1 && heightMap[y+1][x] <= pointer {
+				continue
+			}
+
+			// if not leftmost column and "left" is greater or equal than the pointer, pass
+			if x > 0 && heightMap[y][x-1] <= pointer {
+				continue
+			}
+
+			// if not rightmost column and "right" is greater or equal than the pointer, pass
+			if x < maxX-1 && heightMap[y][x+1] <= pointer {
+				continue
+			}
+
+			// If made it through all conditions, score
+			riskRating += pointer + 1
 		}
 	}
+
+	fmt.Printf("Part 1 -> %d", riskRating)
 }
+
+func smarterPartTwo(heightMap map[int][]int) {
+	maxY := len(heightMap)
+	maxX := len(heightMap[0])
+	riskRating := 0
+
+	for y := 0; y < len(heightMap); y++ {
+		for x := 0; x < len(heightMap[y]); x++ {
+			fmt.Println("Row", y, "Column", x, "->", heightMap[y][x])
+			pointer := heightMap[y][x]
+
+			// if not uppermost row and "up" is greater or equal than the pointer, pass
+			if y > 0 && heightMap[y-1][x] <= pointer {
+				continue
+			}
+
+			// if not bottommost row and "down" is greater or equal than the pointer, pass
+			if y < maxY-1 && heightMap[y+1][x] <= pointer {
+				continue
+			}
+
+			// if not leftmost column and "left" is greater or equal than the pointer, pass
+			if x > 0 && heightMap[y][x-1] <= pointer {
+				continue
+			}
+
+			// if not rightmost column and "right" is greater or equal than the pointer, pass
+			if x < maxX-1 && heightMap[y][x+1] <= pointer {
+				continue
+			}
+
+			// If made it through all conditions, score
+			riskRating += pointer + 1
+		}
+	}
+
+	fmt.Printf("Part 1 -> %d", riskRating)
+}
+
+
 
 // func partTwo(heightMap map[int][]int, shadowMap map[int][]bool) {
 // 	for row := 0; row < len(heightMap); row++ {
