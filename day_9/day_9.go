@@ -2,18 +2,18 @@ package main
 
 import (
 	"fmt"
-	"strconv"
 	"io/ioutil"
+	"sort"
+	"strconv"
 	"strings"
 )
 
 func main() {
-	heightMap, _ := getPuzzleInput("9.in")
+	heightMap := getPuzzleInput("9.in")
 
 	// partOne(heightMap)
-	// partTwo(heightMap, shadowMap)
 	smarterPartOne(heightMap)
-	smarterPartTwo(heightMap)
+	PartTwo(heightMap)
 }
 
 func partOne(heightMap map[int][]int) {
@@ -144,7 +144,6 @@ func partOne(heightMap map[int][]int) {
 
 	// end of matrix
 	fmt.Printf("Part 1 -> %d", riskLevel)
-
 }
 
 func smarterPartOne(heightMap map[int][]int) {
@@ -154,12 +153,12 @@ func smarterPartOne(heightMap map[int][]int) {
 
 	for y := 0; y < len(heightMap); y++ {
 		for x := 0; x < len(heightMap[y]); x++ {
-			fmt.Println("Row", y, "Column", x, "->", heightMap[y][x])
+			// fmt.Println("Row", y, "Column", x, "->", heightMap[y][x])
 			pointer := heightMap[y][x]
+			// 4-way check: top, bottom, left and right boundaries:
 
 			// if not uppermost row and "up" is greater or equal than the pointer, pass
 			if y > 0 && heightMap[y-1][x] <= pointer {
-				
 				continue
 			}
 
@@ -183,132 +182,90 @@ func smarterPartOne(heightMap map[int][]int) {
 		}
 	}
 
-	fmt.Printf("Part 1 -> %d", riskRating)
+	fmt.Printf("Part 1 -> %d\n", riskRating)
+
 }
 
-func smarterPartTwo(heightMap map[int][]int) {
+func PartTwo(heightMap map[int][]int) {
 	maxY := len(heightMap)
 	maxX := len(heightMap[0])
-	riskRating := 0
+
+	var grid2 [][]rune = make([][]rune, len(heightMap))	
+	for i, row := range heightMap {
+		grid2[i] = make([]rune, len(row))
+	}
+
+	name := 'A'
 
 	for y := 0; y < len(heightMap); y++ {
 		for x := 0; x < len(heightMap[y]); x++ {
-			fmt.Println("Row", y, "Column", x, "->", heightMap[y][x])
-			pointer := heightMap[y][x]
-
-			// if not uppermost row and "up" is greater or equal than the pointer, pass
-			if y > 0 && heightMap[y-1][x] <= pointer {
+			if grid2[y][x] != 0 {
 				continue
 			}
 
-			// if not bottommost row and "down" is greater or equal than the pointer, pass
-			if y < maxY-1 && heightMap[y+1][x] <= pointer {
+			if heightMap[y][x] == 9 {
+				grid2[y][x] = '9'
 				continue
 			}
 
-			// if not leftmost column and "left" is greater or equal than the pointer, pass
-			if x > 0 && heightMap[y][x-1] <= pointer {
-				continue
+			type Point struct {
+				x, y int
 			}
 
-			// if not rightmost column and "right" is greater or equal than the pointer, pass
-			if x < maxX-1 && heightMap[y][x+1] <= pointer {
-				continue
-			}
+			// Branch off to a queue, finding all coords of the basin (breadth-first search: https://en.wikipedia.org/wiki/Breadth-first_search)
+			queue := []Point{{x, y}}
 
-			// If made it through all conditions, score
-			riskRating += pointer + 1
+			// if queue isn't empty
+			for len(queue) > 0 {
+				// grab the first point, then pop it off the queue
+				p := queue[0]
+				queue = queue[1:]
+
+				grid2[p.y][p.x] = name
+
+				if p.y > 0 && heightMap[p.y - 1][p.x] != 9 && grid2[p.y - 1][p.x] == 0 {
+					queue = append(queue, Point{p.x, p.y - 1})
+				}
+	
+				if p.y < maxY - 1 && heightMap[p.y + 1][p.x] != 9 && grid2[p.y + 1][p.x] == 0 {
+					queue = append(queue, Point{p.x, p.y + 1})
+				}
+	
+				if p.x > 0 && heightMap[p.y][p.x - 1] != 9 && grid2[p.y][p.x - 1] == 0 {
+					queue = append(queue, Point{p.x - 1, p.y})
+				}
+	
+				if p.x < maxX - 1 && heightMap[p.y][p.x + 1] != 9 && grid2[p.y][p.x + 1] == 0 {
+					queue = append(queue, Point{p.x + 1, p.y})
+				}
+			}
+			
+			// Queue over, change name of next basin
+			name++
 		}
 	}
 
-	fmt.Printf("Part 1 -> %d", riskRating)
+	basins := make(map[rune]int)
+
+	for _, v := range grid2 {
+		for _, r := range v {
+			if r != '9' {
+				basins[r]++
+			}
+		}
+	}
+
+	var sorting []int
+
+	for _, v := range basins {
+		sorting = append(sorting, v)
+	}
+
+	sort.Ints(sorting)
+	fmt.Printf("Part 2 -> %d", sorting[len(sorting)-1] * sorting[len(sorting)-2] * sorting[len(sorting)-3])
 }
 
-
-
-// func partTwo(heightMap map[int][]int, shadowMap map[int][]bool) {
-// 	for row := 0; row < len(heightMap); row++ {
-// 		for column := 0; column < len(heightMap[0]); column++ {
-// 			// Inner loop. Column hit. Print where are we
-// 			// fmt.Println("Row", row, "Column", column, "->", heightMap[row][column], shadowMap[row][column])
-			
-// 			// intPointer := heightMap[row][column]
-// 			// boolPointer := shadowMap[row][column]
-// 			// basinPointer := heightmap[row][column]
-// 			// basinCounter := 0
-
-// 			// Start row conditions:
-// 			if row == 0 {
-// 				// Top row. Condition -> no up
-
-// 				// Start column conditions:
-// 				if column == 0 {
-// 					// First column. Condition -> no left
-// 				} else if column == len(heightMap[0]) - 1 {
-// 					// Last column. Condition -> no right
-// 				} else {
-// 					// Any other column in the middle
-// 				}
-
-// 			} else if row == len(heightMap) - 1 { 
-// 				// Bottom row. Condition -> no down
-
-// 				// Start column conditions:
-// 				if column == 0 {
-// 					// First column. Condition -> no left
-// 				} else if column == len(heightMap[0]) - 1 {
-// 					// Last column. Condition -> no right
-// 				} else {
-// 					// Any other column in the middle
-
-// 				}
-
-// 			} else {
-// 				// Any other row in the middle. Both up and down operative
-
-// 				// Start column conditions:
-// 				if column == 0 {
-// 					// First column. Condition -> no left
-// 				} else if column == len(heightMap[0]) - 1 {
-// 					// Last column. Condition -> no right
-// 				} else {
-// 					// Any other column in the middle
-
-// 					up 		:= heightMap[row-1][column]
-// 					down	:= heightMap[row+1][column]
-// 					left	:= heightMap[row][column-1]
-// 					right	:= heightMap[row][column+1]
-
-// 				}
-// 			}
-
-// 			// Create an indefinite loop:
-// 			// 		if our number is not 9:
-// 			// 			if any of the surrounding are not 9 -> make it true in the shadowmap & sum 1 to basin counter
-// 			//				start going over the true positions. Change the basin pointer to the true positions and check above conditions
-// 			//						
-			
-// 			// all basins are surrounded by 9s
-
-// 			// for {
-// 			// 	if {
-// 			// 		// Part 2 condition
-// 			// 	}
-
-// 			// 	break
-// 			// }
-
-// 		}
-
-// 		// end of row
-// 	} 
-
-// 	// end of matrix
-
-// }
-
-
-func getPuzzleInput(filename string) (map[int][]int, map[int][]bool) {
+func getPuzzleInput(filename string) (map[int][]int) {
 	bytes, err := ioutil.ReadFile(filename)
 	if err != nil {
 		panic(err)
@@ -316,7 +273,6 @@ func getPuzzleInput(filename string) (map[int][]int, map[int][]bool) {
 
 	lines := strings.Split(string(bytes), "\n")
 
-	boolLines := make(map[int][]bool, len(lines))
 	intLines := make(map[int][]int, len(lines))
 	for i, line := range lines {
 
@@ -326,12 +282,10 @@ func getPuzzleInput(filename string) (map[int][]int, map[int][]bool) {
 				// fmt.Println(err)
 			} else {
 				intLines[i] = append(intLines[i], casting)
-				boolLines[i] = append(boolLines[i], false)
 			}
 		}
 
 	}
 
-	return intLines, boolLines
-
+	return intLines
 }
