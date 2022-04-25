@@ -21,6 +21,9 @@ func main() {
 	// 1: get connections and create paths
 	for i, line := range connections {
 		fmt.Println(i, line)
+		for _, r := range line {
+			fmt.Println(r)
+		}
 
 		newCaves := strings.Split(line, "-")
 
@@ -36,56 +39,128 @@ func main() {
 		fmt.Println(c)
 	}
 
-	// fmt.Println("Starting points:")
+	// 2: Create Caves
+	Caves := make([]Cave, 0)
+	for _, c := range uniqueCaves {
+		Caves = append(Caves, createCave(c, connections))
+	}
 
-	// 2: explore connections
-	//		first, note down every start-something1 or start-something2
-	//		then,
-	//			 add something1-something3 to the one ending in something1
-	//			 add something2-something3 to the one ending in something2
-	//		finally, add something3-end
+	// 3: Find all paths (breadth-first search)
+	paths := make(map[int][]string, 0)
+	queue := make([]string, 0)
+	// Start the queue with "start"s links
+	for _, c := range Caves[0].Links {
+		queue = append(queue, c)
+	}
+
+	fmt.Println(queue)
+
+	// while queue not empty
+	for len(queue) > 0 {
+		c := queue[0]
+		queue = queue[1:] 
+
+		for i, cave := range Caves {
+			fmt.Println(i, cave.Name)
+			
+			for _, ca := range Caves {
+				if ca.Name == c {
+					fmt.Println(ca)
+				}
+			}
+
+			j, match := strInStrSlice(cave.Links, c)
+			if match == true {
+				// connection match
+
+				fmt.Printf("match: index=%d | cave.Links=%s\n", j, c)
+
+
+
+
+			}
+			
+		}
+	}
+
+	fmt.Println(paths)
+
 
 }
 
+
+type Cave struct {
+	Name string
+	IsBig bool
+	Visited bool
+	Links []string
+}
+
+func createCave(newCave string, connections []string) Cave {
+	var cave Cave
+	links := make([]string, 0)
+
+	// Name
+	cave.Name = newCave
+
+	// IsBig
+	if strings.ToUpper(newCave) == newCave {
+		cave.IsBig = true
+	} else {
+		cave.IsBig = false
+	}
+
+	// Links
+	for _, l := range connections {
+		link := strings.Split(strings.TrimSuffix(l, "\r"), "-")
+
+		if cave.Name == link[0] {
+			links = append(links, link[1])
+		} else if cave.Name == link[1] {
+			links = append(links, link[0])
+		} else {
+			continue
+		}
+	}
+
+	uniqueLinks := uniqueNonEmptyElementsOf(links)
+	for _, uniqueLink := range uniqueLinks {
+		cave.Links = append(cave.Links, uniqueLink)
+	}
+
+	// fmt.Println(cave)
+
+	return cave
+}
+
+func strInStrSlice(sl []string, s string) (int, bool) {
+	var x int
+	for i, ss := range sl {
+		if s == ss {
+			x = i
+			return x, true
+		}
+	}
+	
+	return x, false
+}
+
 func uniqueNonEmptyElementsOf(s []string) []string {
-	unique := make(map[string]bool, len(s))
-		us := make([]string, len(unique))
+	uniqueCheck := make(map[string]bool, len(s))
+	uniqueSlice := make([]string, len(uniqueCheck))
 		for _, elem := range s {
+			elem = strings.TrimSuffix(elem, "\r")
 			if len(elem) != 0 {
-				if !unique[elem] {
-					us = append(us, elem)
-					unique[elem] = true
+				if !uniqueCheck[elem] {
+					uniqueSlice = append(uniqueSlice, elem)
+					uniqueCheck[elem] = true
 				}
 			}
 		}
 	
-		return us
-  
-  }
-
-func removeStrFromSlice(s []string, r string) []string {
-	for k, v := range s {
-		if r == v {
-			if s[len(s)-1] == r {
-				s = s[:k]
-			} else {
-				s = append(s[:k], s[k+1:]...)
-			}
-		}
-	}
-
-	return s
+		return uniqueSlice
 }
 
-func stringInSlice(y []string, x string) bool {
-	for _, s := range y {
-		if s == x {
-			return true
-		}
-	}
-
-	return false
-}
 
 func getPuzzleInput(filename string) []string {
 	bytes, err := ioutil.ReadFile(filename)
