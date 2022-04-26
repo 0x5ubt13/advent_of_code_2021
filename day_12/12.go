@@ -47,17 +47,11 @@ func main() {
 
 	// 3: Find all paths (breadth-first search)
 	paths := make(map[int][]string, 0)
-	queue := make([]string, 0)
-	// Start the queue with "start"s links
-	for _, c := range Caves[0].Links {
-		queue = append(queue, c)
-	}
-
-	fmt.Println(queue)
+	queue := []Path{Path{[]string{"start"}, map[string]bool{}}}
 
 	// while queue not empty
 	for len(queue) > 0 {
-		c := queue[0]
+		cur := queue[0]
 		queue = queue[1:] 
 
 		for i, cave := range Caves {
@@ -88,12 +82,24 @@ func main() {
 
 }
 
+type Path struct {
+	Path 	[]string
+	Visited map[string]bool
+}
 
 type Cave struct {
-	Name string
-	IsBig bool
-	Visited bool
-	Links []string
+	Name 	string
+	IsBig 	bool
+	Links 	[]string
+}
+
+func copyMap(a map[string]bool) map[string]bool {
+	out := make(map[string]bool)
+	for k, v := range a {
+		out[k] = v
+	}
+
+	return out
 }
 
 func createCave(newCave string, connections []string) Cave {
