@@ -4,11 +4,17 @@ import (
 	"fmt"
 	"io/ioutil"
 	"strings"
+	"time"
 )
 
 func main() {
-	connections := getPuzzleInput("./12.test")
-	// paths := make(map[int][]string, 0)
+	defer timeTrack(time.Now(), "Puzzle day 12")
+	partOne()
+	partTwo()
+}
+
+func partOne() {
+	connections := getPuzzleInput("./12.in")
 	caves := []string{"start"}
 
 	/*
@@ -19,11 +25,10 @@ func main() {
 	*/
 
 	// 1: get connections and create paths
-	for i, line := range connections {
-		fmt.Println(i, line)
-		for _, r := range line {
-			fmt.Println(r)
-		}
+	for _, line := range connections {
+		// for _, r := range line {
+		// 	fmt.Println(r)
+		// }
 
 		newCaves := strings.Split(line, "-")
 
@@ -32,59 +37,149 @@ func main() {
 		}
 	}
 
-
-	fmt.Println("All caves:")
+	// fmt.Println("All caves:")
 	uniqueCaves := uniqueNonEmptyElementsOf(caves)
-	for _, c := range uniqueCaves {
-		fmt.Println(c)
-	}
+	// for _, c := range uniqueCaves {
+	// 	fmt.Println(c)
+	// }
 
 	// 2: Create Caves
-	Caves := make([]Cave, 0)
+	Caves := make(map[string]Cave, 0)
 	for _, c := range uniqueCaves {
-		Caves = append(Caves, createCave(c, connections))
+		Caves[c] = createCave(c, connections)
 	}
 
-	// 3: Find all paths (breadth-first search)
-	paths := make(map[int][]string, 0)
-	queue := []Path{Path{[]string{"start"}, map[string]bool{}}}
+	// fmt.Println(Caves["start"])
+	
+	//3: Find all paths (breadth-first search)
+	queue := []Path{{[]string{"start"}, make(map[string]bool, 0)}}
+	paths := make([]string, 0)
 
-	// while queue not empty
+	//while queue not empty
+	for len(queue) > 0 {
+		// Pop the first element of the queue (first iteration -> start)
+		cur := queue[0]
+		queue = queue[1:] 
+
+		// assign cave to the struct Cave being visited (first iteration -> "{name:start isbig:false links:[A b]}")
+		cave := Caves[cur.Path[len(cur.Path)-1]]
+
+		// If reached the end, stop
+		if cave.Name == "end" {
+			paths = append(paths, strings.Join(cur.Path, ","))
+		}
+
+		// Copying the map is required to avoid overwriting the underlying shared map
+		newVisited := copyMap(cur.Visited)
+		if !cave.IsBig {
+			newVisited[cave.Name] = true
+		}
+
+		// Visit all the links the current cave is linked to
+		for _, kave := range cave.Links {
+			// Original name for a cave, I know :) 
+			// running out of valid, relevant names here
+
+			// If in the current iteration of the queue the cave "kave" was visited, abort
+			if cur.Visited[kave] {
+				continue
+			}
+
+			// copy the path to avoid overwriting the underlying shared array
+			newPath := make([]string, len(cur.Path))
+			copy(newPath, cur.Path)
+
+			newPath = append(newPath, kave)
+
+			queue = append(queue, Path{newPath, newVisited})
+		}
+	}
+
+	// sort.Strings(paths)
+	// for _, path := range paths {
+	// 	fmt.Println(path)
+	// }
+
+	fmt.Printf("Part 1 -> %d different paths\n", len(paths))
+
+}
+
+func partTwo() {
+	connections := getPuzzleInput("./12.in")
+	caves := []string{"start"}
+
+	for _, line := range connections {
+		newCaves := strings.Split(line, "-")
+
+		for _, newCave := range newCaves {			
+			caves = append(caves, newCave)
+		}
+	}
+
+	uniqueCaves := uniqueNonEmptyElementsOf(caves)
+
+	Caves := make(map[string]Cave, 0)
+	for _, c := range uniqueCaves {
+		Caves[c] = createCave(c, connections)
+	}
+
+	queue := []PathTwo{{[]string{"start"}, map[string]bool{}, false}}
+	paths := make([]string, 0)
+
 	for len(queue) > 0 {
 		cur := queue[0]
 		queue = queue[1:] 
 
-		for i, cave := range Caves {
-			fmt.Println(i, cave.Name)
-			
-			for _, ca := range Caves {
-				if ca.Name == c {
-					fmt.Println(ca)
+		cave := Caves[cur.Path[len(cur.Path)-1]]
+
+		if cave.Name == "end" {
+			paths = append(paths, strings.Join(cur.Path, ","))
+			continue
+		}
+
+		newVisited := copyMap(cur.Visited)
+		if !cave.IsBig {
+			newVisited[cave.Name] = true
+		}
+
+		for _, kave := range cave.Links {
+			newSmall := cur.SmallVisitedTwice
+
+			if cur.Visited[kave] { 
+				if kave == "start" || newSmall {
+					continue
+				} else {
+					newSmall = true
 				}
 			}
 
-			j, match := strInStrSlice(cave.Links, c)
-			if match == true {
-				// connection match
+			// copy the path to avoid overwriting the underlying shared array
+			newPath := make([]string, len(cur.Path))
+			copy(newPath, cur.Path)
 
-				fmt.Printf("match: index=%d | cave.Links=%s\n", j, c)
+			newPath = append(newPath, kave)
 
-
-
-
-			}
-			
+			queue = append(queue, PathTwo{newPath, newVisited, newSmall})
 		}
 	}
 
-	fmt.Println(paths)
+	// for _, path := range paths {
+	// 	fmt.Println(path)
+	// }
 
+	fmt.Printf("Part 2 -> %d different paths\n", len(paths))
 
 }
 
 type Path struct {
 	Path 	[]string
 	Visited map[string]bool
+}
+
+type PathTwo struct {
+	Path 	[]string
+	Visited map[string]bool
+	SmallVisitedTwice bool
 }
 
 type Cave struct {
@@ -175,4 +270,9 @@ func getPuzzleInput(filename string) []string {
 	}
 
 	return strings.Split(string(bytes), "\n")
+}
+
+func timeTrack(start time.Time, name string) {
+	elapsed := time.Since(start)
+	fmt.Printf("%s took %v seconds", name, elapsed.Seconds())
 }
