@@ -4,7 +4,7 @@ Please be welcomed to my solutions for Advent of Code 2021!! :smiley:
 This year I will try to complete every day at least with my strongest suit (Python) within the day and save a record whether the target has been met. Then, attempt to complete them in Golang without a time constraint (ideally will mark with a check if solved before the next Advent of Code). 
 
 | Puzzle | Language |     Completed    | Target met on time | Specials |
-|:------:|:--------:|:----------------:|:----------:|
+|:------:|:--------:|:----------------:|:----------:|:----------:|
 | [Day 1](./day_1)  |  [Python](./day_1/day_1.py)  |:heavy_check_mark:|:star2::star2:||
 |        |    [Go](./day_1/day_1.go)    |:heavy_check_mark:|:heavy_check_mark:| |
 | [Day 2](./day_2)  |  [Python](./day_2/day_2.py)  |:heavy_check_mark:|:star2::star2:||
@@ -28,5 +28,5 @@ This year I will try to complete every day at least with my strongest suit (Pyth
 | [Day 11](./day_11)  |  [Python](./day_11/day_11.py)  |:woozy_face:|:woozy_face:||
 |        |    [Go](/day_11/11.go)    | :heavy_check_mark: |:heavy_check_mark:|10 by 10 Grid, diagonals|
 | [Day 12](./day_12)  |  [Go](./day_12/12.go)  |:heavy_check_mark: |:heavy_check_mark: | Breadth-first search |
-| [Day 13](./day_13)  |  [Go](./day_13/13.go)  | | |
-| [Day 14](./day_14)  |  [Go](./day_14/14.go)  | | |
+| [Day 13](./day_13)  |  [Go](./day_13/13.go)  | | | |
+| [Day 14](./day_14)  |  [Go](./day_14/14.go)  | | | |
