@@ -1,31 +1,36 @@
 #!/usr/bin/python3
 
+from collections import defaultdict, deque
+import time
 
-def get_input(filename):
-    with open(filename, 'r') as f:
-        return [line.strip().split('-') for line in f]
+tic = time.perf_counter()
 
-def possibilities(data):
-    possibilities = []
-    for i in data:
-        for j in i:
-            if j not in possibilities:
-                possibilities.append(j)
-    return possibilities
-
-
-def part_1(data):
-    paths = []
-    x = 1
-    for i in data:
-        print(f"Path {x}")
-        print(f"Pos {i}")
-        for j in i:
-            print(j)
-        x += 1
+def trace(map, dbls):
+    ct = 0
+    tracker = deque([("start", set(["start"]), False)])
+    while tracker:
+        p, seen, visited = tracker.popleft()
+        if p == "end":
+            ct += 1
+            continue
+        for c in map[p]:
+            if c not in seen:
+                seen_cp = set(seen)
+                if c.islower():
+                    seen_cp.add(c)
+                tracker.append((c, seen_cp, visited))
+            elif c in seen and not visited and c not in ["start", "end"] and dbls:
+                tracker.append((c, seen, c))
+    return ct
 
 
-if __name__ == '__main__':
-    data = get_input("./day_12/12.test")
-    part_1(data)
-    
+data = open("./day_12/12.in").read().strip().split("\n")
+map = defaultdict(list)
+for line in data:
+    p, c = line.split("-")
+    map[p].append(c)
+    map[c].append(p)
+print(f"Part 1: {trace(map, False)}")
+print(f"Part 2: {trace(map, True)}")
+toc = time.perf_counter()
+print(f"Puzzle 12 python -> {toc - tic:0.4f} seconds")
