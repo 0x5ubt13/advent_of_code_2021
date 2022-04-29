@@ -32,6 +32,9 @@ func main () {
 	}
 
 	printGrid(grid)
+	
+	
+	foldGrid(grid, folds[0], maxY, maxX)
 
 
 
@@ -39,37 +42,29 @@ func main () {
 }
 
 func foldGrid(grid map[int][]string, f Fold, maxY, maxX int) {
-	grid2 := map[int][]string
-
-	if f.Axis == "y" {
-
-
-		for y := 0; y < maxY; y++ {
-			for x := 0; x < maxX; x++ {
-				grid[y] = append(grid[y], ".")
-			}
-		}
-
-
-	} else {
-
-
-		for y := 0; y < maxY; y++ {
-			for x := 0; x < maxX; x++ {
-				grid[y] = append(grid[y], ".")
-			}
-		}
-
-		
+	grid2 := make(map[int][]string)
+	for k, v := range grid {
+		grid2[k] = v
 	}
 
+	for y := 0; y < maxY; y++ {
+		for x := 0; x < maxX; x++ {
+			if f.Axis == "y" && y == f.Position {
+				grid2[y][x] = "-"
+			}
+		}
+	}
+
+	printGrid(grid2)
 	
 }
 
 func printGrid(grid map[int][]string) {
+	fmt.Println()
 	for i:=0; i<len(grid); i++{
 		fmt.Println(grid[i])
 	}
+	fmt.Println()
 }
 
 func drawGrid(maxX, maxY int, coords []Coord) map[int][]string {
