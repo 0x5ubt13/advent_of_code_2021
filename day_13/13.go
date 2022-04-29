@@ -18,41 +18,58 @@ func main () {
 		fmt.Println(i, f)
 	}
 
-	fmt.Println("Max X:", maxX)
-	fmt.Println("Max Y:", maxY)
-
+	// Create grid and populate with empty dots
 	grid := make(map[int][]string)
-	// Populate the grid with dots
 	for y := 0; y < maxY; y++ {
 		for x := 0; x < maxX; x++ {
 			grid[y] = append(grid[y], ".")
 		}
 	}
-
-	var pointerY, pointerX int
-
-	for i, coord := range coords {
-		if i == 0 {
-			pointerX = coord.X 
-			pointerY = coord.Y +1
-		} else if i == 1 || i == 2 || i == 3 {
-			pointerX += coord.X % maxX
-			px := pointerX + coord.X - 1
-			py := pointerY + coord.Y - 1
-			pointerX = px % maxX
-			pointerY = py % maxY
-		} 
-
-		grid[pointerY][pointerX] = "#"
+	
+	// Make use of the coordinates and draw marks
+	for _, coord := range coords {
+		grid[coord.Y][coord.X] = "#"
 	}
 
-	fmt.Println(len(grid))
+	printGrid(grid)
 
+
+
+
+}
+
+func foldGrid(grid map[int][]string, f Fold, maxY, maxX int) {
+	grid2 := map[int][]string
+
+	if f.Axis == "y" {
+
+
+		for y := 0; y < maxY; y++ {
+			for x := 0; x < maxX; x++ {
+				grid[y] = append(grid[y], ".")
+			}
+		}
+
+
+	} else {
+
+
+		for y := 0; y < maxY; y++ {
+			for x := 0; x < maxX; x++ {
+				grid[y] = append(grid[y], ".")
+			}
+		}
+
+		
+	}
+
+	
+}
+
+func printGrid(grid map[int][]string) {
 	for i:=0; i<len(grid); i++{
 		fmt.Println(grid[i])
 	}
-
-
 }
 
 func drawGrid(maxX, maxY int, coords []Coord) map[int][]string {
