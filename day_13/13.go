@@ -8,15 +8,7 @@ import (
 )
 
 func main () {
-	coords, folds, maxX, maxY := getPuzzleInput("./13.test")
-
-	for i, c := range coords {
-		fmt.Println(i, c)
-	}
-
-	for i, f := range folds {
-		fmt.Println(i, f)
-	}
+	coords, folds, maxX, maxY := getPuzzleInput("./13.in")
 
 	// Create grid and populate with empty dots
 	grid := make(map[int][]string)
@@ -25,55 +17,50 @@ func main () {
 			grid[y] = append(grid[y], ".")
 		}
 	}
-
-	fmt.Printf("Max X -> %d\nMax Y -> %d\n", maxX, maxY)
 	
 	// Make use of the coordinates and draw marks
 	for _, coord := range coords {
 		grid[coord.Y][coord.X] = "#"
 	}
 
+	// Fold the grid
+	for i := 0; i < len(folds); i++ {
+		grid, maxY, maxX = foldGrid(grid, folds[i], maxY, maxX)
+
+		if i == 1 {
+			fmt.Printf("Part 1 -> %d\n", countMarks(grid, maxX, maxY))
+		}
+	}
+
+	fmt.Printf("Part 2 ->")
 	printGrid(grid)
-
-	countMarks(grid, maxX, maxY)
-
-	grid, maxY, maxX = foldGrid(grid, folds[0], maxY, maxX)
-
-	printGrid(grid)
-
-	countMarks(grid, maxX, maxY)
-
-	grid, maxY, maxX = foldGrid(grid, folds[1], maxY, maxX)
-	countMarks(grid, maxX, maxY)
-
-
-
 }
 
-func countMarks(grid map[int][]string, maxX, maxY int) {
+func countMarks(grid map[int][]string, maxX, maxY int) int {
 	marks := 0
 	for i:=0; i<len(grid)+1; i++ {
 		marks += strings.Count(strings.Join(grid[i], ""), "#")
 	}
 
-	fmt.Println(marks)
+	return marks	
 }
 
 func foldGrid(grid map[int][]string, f Fold, maxY, maxX int) (map[int][]string, int, int) {
 	grid2 := make(map[int][]string)
 	for k, v := range grid {
-		fmt.Printf("Copying grid[%d] -> %v\n", k, grid[k])
 		grid2[k] = v
 	}
 
 	for y := 0; y < maxY; y++ {
 		for x := 0; x < maxX; x++ {
 			// If arrives to the folding point
-			if f.Axis == "y" && y == f.Position || f.Axis == "x" && x == f.Position {
-				fmt.Printf("Y -> %d, X -> %d, maxY -> %d, maxX -> %d\n", y, x, maxY, maxX)
-
+			if f.Axis == "y" && y == f.Position {
 				grid2[y][x] = "-"
 			} 
+
+			if f.Axis == "x" && x == f.Position {
+				grid2[y][x] = "|"
+			}
 			
 			// If goes beyond the folding point
 			if f.Axis == "y" && f.Position < y && grid2[y][x] == "#" {
@@ -85,8 +72,6 @@ func foldGrid(grid map[int][]string, f Fold, maxY, maxX int) (map[int][]string, 
 				diff := x - f.Position
 				grid2[y][f.Position - diff] = "#"
 			}
-
-
 		}
 	}
 
@@ -96,15 +81,14 @@ func foldGrid(grid map[int][]string, f Fold, maxY, maxX int) (map[int][]string, 
 				delete(grid2, y)
 			}
 		}
-
-		maxY = f.Position+1
+		
+		maxY = f.Position
 	} else {
-		for x := 0; x < maxX; x++ {
-			if x >= f.Position {
-				delete(grid2, x)
-			}
+		for y := 0; y < maxY; y++ {
+			grid2[y] = grid2[y][:f.Position]
 		}
-		maxX = f.Position+1
+
+		maxX = f.Position
 	}
 	
 	return grid2, maxY, maxX
@@ -116,7 +100,6 @@ func printGrid(grid map[int][]string) {
 	for i:=0; i<len(grid); i++{
 		fmt.Println(grid[i])
 	}
-	fmt.Println()
 }
 
 func drawGrid(maxX, maxY int, coords []Coord) map[int][]string {
@@ -159,7 +142,7 @@ func getPuzzleInput(fn string) ([]Coord, []Fold, int, int) {
 		coordinates := strings.Split(line, ",")
 		newCoord.X, err = strconv.Atoi(strings.TrimSuffix(coordinates[0], "\r"))
 		if err != nil {
-			fmt.Println(err)
+			// fmt.Println(err)
 			if len(line) > 1 {
 				for _, ch := range line {
 					if ch == 'y' {
@@ -179,10 +162,7 @@ func getPuzzleInput(fn string) ([]Coord, []Fold, int, int) {
 			}
 			continue
 		} 
-		newCoord.Y, err = strconv.Atoi(strings.TrimSuffix(coordinates[1], "\r"))
-		if err != nil {
-			fmt.Println(err)
-		}
+		newCoord.Y, _ = strconv.Atoi(strings.TrimSuffix(coordinates[1], "\r"))
 		
 		coords = append(coords, newCoord)
 	}
