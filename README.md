@@ -29,4 +29,6 @@ This year I will try to complete every day at least with my strongest suit (Pyth
 |        |    [Go](/day_11/11.go)    | :heavy_check_mark: |:heavy_check_mark:|10 by 10 Grid, diagonals|
 | [Day 12](./day_12)  |  [Go](./day_12/12.go)  |:heavy_check_mark: |:heavy_check_mark: | Breadth-first search |
 | [Day 13](./day_13)  |  [Go](./day_13/13.go)  |:heavy_check_mark: |:heavy_check_mark:| Folding grids |
-| [Day 14](./day_14)  |  [Go](./day_14/14.go)  | In progress | | |
+| [Day 14](./day_14)  |  [Go](./day_14/14.go)  |:heavy_check_mark:|:heavy_check_mark:| Memory management |
+| [Day 15](./day_15)  |  [Go](./day_14/15.go)  | In progress... |||
+
