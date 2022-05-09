@@ -14,28 +14,15 @@ type Coord struct {
 	Y, X int
 }
 
-func timeTrack(start time.Time, name string) {
-	elapsed := time.Since(start)
-	log.Printf("%s took %s", name, elapsed)
-}
-
 func main() {
 	grid := getGrid("./15_in.txt")
 	maxY := len(grid)
 	maxX := len(grid[0])
 
-	part1 := time.Now()
 	partOne(grid, maxY, maxX)
-	elapsed := time.Since(part1)
-	log.Printf("%s took %s", "Part1", elapsed)
 
-
-	
-	maxY2 := maxY * 5
-	maxX2 := maxX * 5
-	defer timeTrack(time.Now(), "part2")
-	partTwo(grid, maxY2, maxX2)
-
+	defer timeTrack(time.Now(), "Part 2")
+	partTwo(grid, maxY*5, maxX*5)
 }
 
 func partTwo(grid map[int][]int, maxY, maxX int) {
@@ -46,7 +33,6 @@ func partTwo(grid map[int][]int, maxY, maxX int) {
 	
 	for y := 0; y < maxY; y++ {
 		for x := 0; x < maxX; x++ {
-			// "Zero for out initial node"
 			if y == 0 && x == 0 {
 				nodeDistance[Coord{y, x}] = 0
 			} else {
@@ -57,7 +43,7 @@ func partTwo(grid map[int][]int, maxY, maxX int) {
 
 	rows := len(grid)
 	cols := len(grid[0])
-	
+
 	current := Coord{0,0}
 
 	for {
@@ -71,8 +57,7 @@ func partTwo(grid map[int][]int, maxY, maxX int) {
 				continue
 			}
 
-			// Part 2 special: increment the grid 5 times in both dimensions using modulus
-
+			// Part 2 special: increment the grid 5 times in each dimension using modulus
 			y := neighbour.Y % rows // capping to length of rows
 			x := neighbour.X % cols // capping to length of cols
 			val := grid[y][x] + neighbour.Y / rows + neighbour.X / cols // update values accordingly
@@ -87,7 +72,7 @@ func partTwo(grid map[int][]int, maxY, maxX int) {
 		}
 
 		visited[current] = true
-		
+
 		if visited[Coord{maxY-1, maxX-1}] == true {
 			fmt.Println(nodeDistance[Coord{maxY-1, maxX-1}])
 			break
@@ -96,7 +81,6 @@ func partTwo(grid map[int][]int, maxY, maxX int) {
 			minDistance := math.MaxInt
 
 			for k, v := range nodeDistance {
-				// fmt.Println(k, v)
 				if v < minDistance && !visited[k] {
 					minDistance = v
 					minCoord = k
@@ -136,8 +120,6 @@ func partOne(grid map[int][]int, maxY, maxX int) {
 	current := Coord{0, 0}
 
 	for {
-		// fmt.Println(current)
-
 		if visited[current] == true {
 			continue
 		}
@@ -158,7 +140,6 @@ func partOne(grid map[int][]int, maxY, maxX int) {
 			if newDistance < nodeDistance[neighbour] {
 				nodeDistance[neighbour] = newDistance
 			}
-
 		}
 
 		// 4. When we are done considering all of the unvisited neighbors of the current node, mark the current node as visited and remove it from the unvisited set.
@@ -187,7 +168,7 @@ func partOne(grid map[int][]int, maxY, maxX int) {
 			}
 
 			current = minCoord
-			// fmt.Println("new current", current)
+			// fmt.Println("New current", current)
 		}
 	}
 }
@@ -237,4 +218,9 @@ func getGrid(filename string) map[int][]int {
 	}
 
 	return rows
+}
+
+func timeTrack(start time.Time, name string) {
+	elapsed := time.Since(start)
+	log.Printf("%s took %s", name, elapsed)
 }
