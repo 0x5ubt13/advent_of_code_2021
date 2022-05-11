@@ -26,16 +26,27 @@ func main() {
 
 	}
 
-	fmt.Println(borked)
+	fmt.Println(borked, len(borked))
+
+	packets := make([]Packet, 0)
+
+	for {
+		newPacket := Packet{}
+		newPacket.Version = borked[0:2]
+	}
 
 	for i, char := range borked {
 		fmt.Println(i, string(char))
+		
 	}
 
 }
 
 type Packet struct {
 	Version uint64
+	TypeID uint64
+	LengthID uint64
+	Subpackets []uint64
 } 
 
 func getPuzzleInput(filename string) []byte {
@@ -43,8 +54,6 @@ func getPuzzleInput(filename string) []byte {
 	if err != nil {
 		fmt.Println(err)
 	}
-
-	// lines := string(bytes)
 	
 	return bytes
 }
