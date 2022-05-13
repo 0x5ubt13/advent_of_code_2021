@@ -110,7 +110,17 @@ func main() {
 			fmt.Println("length ID:", newPacket.LengthID)
 			borked = borked[1:]
 
-			if newPacket.LengthID == 1 {
+			if newPacket.LengthID == 0 {
+				// If the length type ID is 0, then the next 15 bits are a number that 
+				// represents the total length in bits of the sub-packets contained by this packet.
+
+				newPacket.SubpacketsArray, err = strconv.ParseInt(borked[0:15], 2, 64); if err != nil { fmt.Println(err) }
+				borked = borked[15:]
+				
+				for i := 1; i < int(newPacket.SubpacketsArray); i++ {
+					fmt.Println("subpacket", i, ":", newPacket.Subpackets[i])
+				}
+			} else {
 				// If the length type ID is 1, then the next 11 bits are a number that 
 				// represents the number of sub-packets immediately contained by this packet.
 
@@ -126,14 +136,8 @@ func main() {
 					borked = borked[11:]
 					fmt.Println("subpacket", i, ":", newPacket.Subpackets[i])
 				} 
-
 				break
 
-			} else {
-				// If the length type ID is 0, then the next 15 bits are a number that 
-				// represents the total length in bits of the sub-packets contained by this packet.
-
-				newPacket.
 			}
 
 		} 
