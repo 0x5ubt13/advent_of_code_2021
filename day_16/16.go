@@ -40,7 +40,8 @@ func main() {
 		fmt.Println("iter", i)
 		var err error
 		// var tmpInt int64
-		newPacket := Packet{}
+		newPacket := Packet{Subpackets: make(map[int]int64)}
+		
 
 		// Get version number
 		version := borked[0:3]
@@ -120,8 +121,10 @@ func main() {
 				borked = borked[11:]
 
 				// loop through subpackets
-				for i := 0; i < int(newPacket.SubpacketsArray); i++ {
-					fmt.Println("subpacket", i, ":")
+				for i := 1; i < int(newPacket.SubpacketsArray); i++ {
+					newPacket.Subpackets[i], err = strconv.ParseInt(borked[0:11], 0, 64); if err != nil { fmt.Println(err) }
+					borked = borked[11:]
+					fmt.Println("subpacket", i, ":", newPacket.Subpackets[i])
 				} 
 
 				break
@@ -129,6 +132,8 @@ func main() {
 			} else {
 				// If the length type ID is 0, then the next 15 bits are a number that 
 				// represents the total length in bits of the sub-packets contained by this packet.
+
+				newPacket.
 			}
 
 		} 
@@ -154,7 +159,7 @@ type Packet struct {
 	TypeID int64
 	LengthID byte
 	SubpacketsArray int64
-	Subpackets []uint64
+	Subpackets map[int]int64
 	ValueInt64 int64
 	ValueStr string
 } 
