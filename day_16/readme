@@ -50,8 +50,8 @@ Finally, after the length type ID bit and the 15-bit or 11-bit field, the sub-pa
 
 For example, here is an operator packet (hexadecimal string 38006F45291200) with length type ID 0 that contains two sub-packets:
 
-001 110 0 000000000011011 11010001010 0101001000100100 0000000
-VVV TTT I LLLLLLLLLLLLLLL AAAAAAAAAAA BBBBBBBBBBBBBBBB 
+001 110 0 000000000011011 110 100 01010 010 1001 000100100 0000000
+VVV TTT I LLLLLLLLLLLLLLL AAA AAA AAAAA BBB BBBB BBBBBBBBB 
 The three bits labeled V (001) are the packet version, 1.
 The three bits labeled T (110) are the packet type ID, 6, which means the packet is an operator.
 The bit labeled I (0) is the length type ID, which indicates that the length is a 15-bit number representing the number of bits in the sub-packets.
@@ -62,8 +62,8 @@ After reading 11 and 16 bits of sub-packet data, the total length indicated in L
 
 As another example, here is an operator packet (hexadecimal string EE00D40C823060) with length type ID 1 that contains three sub-packets:
 
-111 011 1 00000000011 01010000001 10010000010 00110000011 00000
-VVV TTT I LLLLLLLLLLL AAAAAAAAAAA BBBBBBBBBBB CCCCCCCCCCC 
+111 011 1 00000000011 010 100 00001 100 100 00010 001 100 00011 00000
+VVV TTT I LLLLLLLLLLL AAA AAA AAAAA BBB BBB BBBBB CCC CCC CCCCC 
 The three bits labeled V (111) are the packet version, 7.
 The three bits labeled T (011) are the packet type ID, 3, which means the packet is an operator.
 The bit labeled I (1) is the length type ID, which indicates that the length is a 11-bit number representing the number of sub-packets.

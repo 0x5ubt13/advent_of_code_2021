@@ -179,4 +179,3 @@ func getPuzzleInput(filename string) []byte {
 
 
 
-
