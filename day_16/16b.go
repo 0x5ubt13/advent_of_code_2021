@@ -7,26 +7,51 @@ import (
 	"strconv"
 )
 
+func identifyPacket(message string, p Packet, versions int) (string, Packet, int) {
+	// Take version number and Type ID and return the rest
+	// Get version number
+	version := message[0:3]
+	message = message[3:]
+	fmt.Println("version:", version)
+
+	v, err := strconv.ParseInt(version, 2, 8); if err != nil { fmt.Println(err) }
+	versions += int(v)
+
+	fmt.Println(versions)
+
+	// Get type ID
+	typeID := message[0:3]
+	message = message[3:]
+	fmt.Println("type ID:", typeID)
+
+	p.TypeID, err = strconv.ParseInt(typeID, 2, 8); if err != nil { fmt.Println(err) }
+
+
+
+
+	return message, p, versions, 
+
+}
+
+func parsePacket(message string, p Packet, version int) (string, Packet, int) {
+	message, p, versions, typeID := identifyPacket(message, p, versions)
+
+	switch typeID {
+	case 0:
+
+	case 1:
+
+	}
+	
+}
+
 func main() {
 	// data := getPuzzleInput("./16_in.txt")
 	// data := "D2FE28" // test 1
 	// data := "38006F45291200" // operator, type 1
 	data := "EE00D40C823060" // operator, type 0
 
-	fmt.Println(data)
-
-	message := ""
-
-	for _, byte := range data {
-		i, err := strconv.ParseUint(string(byte), 16, 8)
-    	if err != nil {
-        	fmt.Printf("%s", err)
-    	}
-		fmt.Printf("%04b\n", i)
-
-		message += fmt.Sprintf("%04b", i)
-
-	}
+	message := parseMessage(data)
 
 	fmt.Println(message, len(message))
 
@@ -158,41 +183,22 @@ type Packet struct {
 	ValueStr string
 } 
 
-func identifyPacket(message string, p Packet, versions int) (string, Packet, int) {
-	// Take version number and Type ID
-	// Get version number
-	version := message[0:3]
-	message = message[3:]
-	fmt.Println("version:", version)
 
-	v, err := strconv.ParseInt(version, 2, 8); if err != nil { fmt.Println(err) }
-	versions += int(v)
+func parseMessage(data string) string {
+	message := ""
+	for _, byte := range data {
+		i, err := strconv.ParseUint(string(byte), 16, 8)
+    	if err != nil {
+        	fmt.Printf("%s", err)
+    	}
+		fmt.Printf("%04b\n", i)
 
-	fmt.Println(p.Versions)
-
-	// Get type ID
-	typeID := message[0:3]
-	message = message[3:]
-	fmt.Println("type ID:", typeID)
-
-	p.TypeID, err = strconv.ParseInt(typeID, 2, 8); if err != nil { fmt.Println(err) }
-
-
-
-}
-
-func parsePacket(message string, p Packet) Packet {
-	message, p, typeID := identifyPacket(message, p)
-
-	switch typeID {
-	case 0:
-
-	case 1:
-
+		message += fmt.Sprintf("%04b", i)
 	}
 
-	
+	return message
 }
+
 
 func getPuzzleInput(filename string) []byte {
 	bytes, err := ioutil.ReadFile(filename)
