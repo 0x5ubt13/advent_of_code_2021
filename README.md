@@ -30,6 +30,6 @@ This year I will try to complete every day at least with my strongest suit (Pyth
 | [Day 12](./day_12)  |  [Go](./day_12/12.go)  |:heavy_check_mark: |:heavy_check_mark: | Breadth-first search |
 | [Day 13](./day_13)  |  [Go](./day_13/13.go)  |:heavy_check_mark: |:heavy_check_mark:| Folding grids |
 | [Day 14](./day_14)  |  [Go](./day_14/14.go)  |:heavy_check_mark:|:heavy_check_mark:| Memory management |
-| [Day 15](./day_15)  |  [Go](./day_15/15.go)  |:heavy_check_mark:|:heavy_check_mark:| Dijkstra's algorithm (37 min runtime part 2)|
-| [Day 16](./day_16)  |  [Go](./day_16/16.go)  | In progress... || Binary and Hex manipulation |
+| [Day 15](./day_15)  |  [Go](./day_15/15.go)  |:heavy_check_mark:|:heavy_check_mark:| Dijkstra's algorithm (37 min runtime part 2 - TODO: improve)|
+| [Day 16](./day_16)  |  [Go](./day_16/16.go)  | In progress... || Bitwise operations |
 
