@@ -2,6 +2,8 @@ package main
 
 import "fmt"
 
+var Count int
+
 func main() {
 
 	bits := []byte{
@@ -9,11 +11,12 @@ func main() {
 		0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 0, 0, 1, 0, 1 , 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		// 1,1,1,0,1,1,1,0,0,0,0,0,0,0,0,0,1,1,0,1,0,1,0,0,0,0,0,0,1,1,0,0,1,0,0,0,0,0,1,0,0,0,1,1,0,0,0,0,0,1,1,0,0,0,0,0,
 	}
-
 	l, c := readPacket(bits, 0)
 
 	fmt.Println(l, c)
 }
+
+
 
 type Literal struct {
 	Version int64
@@ -71,8 +74,10 @@ func readPacket(data []byte, startpos int) (l interface{}, c int) {
 			subpacketPosStart := pos
 
 			for int64(pos - subpacketPosStart) < op.Length {
+				Count++
+				fmt.Println("Entering lengthID=0 loop, iteration number", Count)
 				fmt.Printf("Pos: %d, subpacketPosStart: %d, op.length: %d\n", pos, subpacketPosStart, op.Length)
-				packet, count := readPacket(data, pos)
+				packet, count := readNumber(data, pos)
 				pos += count
 
 				op.Packets = append(op.Packets, packet)
@@ -98,6 +103,7 @@ func readPacket(data []byte, startpos int) (l interface{}, c int) {
 			for i := int64(0); i < length; i++ {
 				// fmt.Println(i, count)
 
+				fmt.Println("Entering readPacket for", i, "time")
 				packet, count := readPacket(data, pos)
 				pos += count
 
