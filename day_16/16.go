@@ -7,39 +7,107 @@ import (
 )
 
 var Count int
+var Value int
 
 func main() {
-	// bits := []byte{
-	// 	// 1, 1, 0, 1, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0,
-	// 	// 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	// 	// 1,1,1,0,1,1,1,0,0,0,0,0,0,0,0,0,1,1,0,1,0,1,0,0,0,0,0,0,1,1,0,0,1,0,0,0,0,0,1,0,0,0,1,1,0,0,0,0,0,1,1,0,0,0,0,0,
-	// }
-
 	bits := parseMessage(getPuzzleInput("16_in.txt"))
-	fmt.Println(bits)
+	// bits = parseMessage("9C0141080250320F1802104A08")
 
 	packet, _ := readPacket(bits, 0)
 	// fmt.Printf("%+v\n", packets)
 	partOne := packetArithmeticsVersions(packet)
+	partTwo := packetArithmeticsValues(packet)
+	// packetArithmeticsValues(packet)
 
 	fmt.Printf("Part 1: -> %d\n", partOne)
+	fmt.Printf("Part 2: -> %d\n", partTwo)
 }
 
 func packetArithmeticsValues(packet interface{}) int64 {
-	var values int64
-
+	// Part 2: calculate values
 	switch interf := packet.(type) {
 	case Literal:
-		values += interf.Version
+		return interf.Value
 	case Operator:
-		values += interf.Version
+		// fmt.Println("Type ID =", interf.TypeID)
+		switch interf.TypeID {
+		case 0: // Sum
+			if len(interf.Packets) < 2 {
+				return packetArithmeticsValues(interf.Packets[0])
+			} else {
+				var value int64
+				for _, subpacket := range interf.Packets {
+					value += packetArithmeticsValues(subpacket)		
+				}
 
-		for _, subpacket := range interf.Packets {
-			values += packetArithmeticsVersions(subpacket)
+				return value
+			}
+		case 1: // Multiply
+			if len(interf.Packets) < 2 {
+				return packetArithmeticsValues(interf.Packets[0])
+			} else {
+				value := 1
+				for _, subpacket := range interf.Packets {
+					value *= int(packetArithmeticsValues(subpacket))				
+				}
+
+				return int64(value)
+			}
+		case 2: // Min
+			if len(interf.Packets) < 2 {
+				return packetArithmeticsValues(interf.Packets[0])
+			} else {
+				var min int64 = 999999999999999
+				for _, subpacket := range interf.Packets {
+					candidate := packetArithmeticsValues(subpacket)
+					if candidate < min {
+						min = candidate
+					}				
+				}
+
+				return min
+			}
+		case 3: // Max 
+			if len(interf.Packets) < 2 {
+				return packetArithmeticsValues(interf.Packets[0])
+			} else {
+				var max int64 
+				for _, subpacket := range interf.Packets {
+					candidate := packetArithmeticsValues(subpacket)
+					if candidate > max {
+						max = candidate
+					}				
+				}
+
+				return max
+			}
+		case 5: // Greater than (>)
+			p1 := packetArithmeticsValues(interf.Packets[0])
+			p2 := packetArithmeticsValues(interf.Packets[1])
+
+			if p1 > p2 {
+				return 1
+			} 
+
+		case 6: // Less than (<)
+			p1 := packetArithmeticsValues(interf.Packets[0])
+			p2 := packetArithmeticsValues(interf.Packets[1])
+
+			if p1 < p2 {
+				return 1
+			} 
+
+		case 7: // Equal to (==)
+			p1 := packetArithmeticsValues(interf.Packets[0])
+			p2 := packetArithmeticsValues(interf.Packets[1])
+
+			if p1 == p2 {
+				return 1
+			}
 		}
-	}
 
-	return values
+	}
+	return 0
 }
 
 func packetArithmeticsVersions(packet interface{}) int64 {
@@ -57,7 +125,6 @@ func packetArithmeticsVersions(packet interface{}) int64 {
 	}
 
 	return sumVersions
-	
 }
 
 type Literal struct {
@@ -104,6 +171,7 @@ func readPacket(data []byte, startpos int) (l interface{}, c int) {
 		}, pos - startpos
 
 	default: // Other typeID than 4
+
 		fmt.Println("Entering typeID = not 4 case")
 
 		lengthID, count := readBits(data, pos, 1)
@@ -139,7 +207,6 @@ func readPacket(data []byte, startpos int) (l interface{}, c int) {
 
 			return op, pos - startpos
 
-			
 		} else { // lengthID = 1
 			length, count := readBits(data, pos, 11)
 			op.Length = length
@@ -147,9 +214,7 @@ func readPacket(data []byte, startpos int) (l interface{}, c int) {
 
 			// fmt.Println(length)
 			pos += count
-
 			op.Length = length
-
 
 			for i := int64(0); i < length; i++ {
 				// fmt.Println(i, count)
@@ -167,7 +232,6 @@ func readPacket(data []byte, startpos int) (l interface{}, c int) {
 }
 
 func readNumber(data []byte, startpos int) (num int64, count int) {
-
 	for {
 		// The part of the last 4 bits is the number we are looking for
 		part, _ := readBits(data, startpos, 5)
@@ -180,7 +244,7 @@ func readNumber(data []byte, startpos int) (num int64, count int) {
 		if part & 0x10 == 0 {
 			break
 		}
-		// otherwise, we read 5 more
+		// otherwise, loop starts again -> we read 5 more
 	}
 
 	return num, count
@@ -202,7 +266,7 @@ func readBits(data []byte, startpos, count int) (int64, int) {
 }
 
 func parseMessage(data string) []byte {
-	fmt.Println(data)
+	// fmt.Println(data)
 	message := ""
 	bits := make([]byte, 0)
 	for _, byte := range string(data) {
@@ -229,7 +293,7 @@ func getPuzzleInput(filename string) string {
 		fmt.Println(err)
 	}
 
-	fmt.Println(bytes)
+	// fmt.Println(bytes)
 
 	message := ""
 
@@ -237,7 +301,7 @@ func getPuzzleInput(filename string) string {
 		message += string(num)
 	}
 
-	fmt.Println(message)
+	// fmt.Println(message)
 	
 	return message
 }
