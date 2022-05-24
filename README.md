@@ -33,4 +33,4 @@ This year I will try to complete every day at least with my strongest suit (Pyth
 | [Day 15](./day_15)  |  [Go](./day_15/15.go)  |:heavy_check_mark:|:heavy_check_mark:| Dijkstra's algorithm (TODO: 37' runtime)|
 | [Day 16](./day_16)  |  [Go](./day_16/16.go)  |:heavy_check_mark:|:heavy_check_mark:| Bitwise operations. TODO: clean up |
 | [Day 17](./day_17)  |  [Go](./day_17/17.go)  |:heavy_check_mark:|:heavy_check_mark:||
-| [Day 18](./day_18)  |  [Go](./day_18/18.go)  ||| In Progress! - Input parsing + regexp|
+| [Day 18](./day_18)  |  [Go](./day_18/18.go)  ||| In Progress! - Input parsing + RegExp|

@@ -8,43 +8,61 @@ import (
 )
 
 func main() {
-	data := getInput("./test.txt")	
+	selector(getInput("./test.txt"))	
 }
 
 func selector(lines []string) {
+	var finalNumber string
 	// Select between addition, exploding or splitting
-	finalNumber := string
-	for _, nextNumber := range lines {
+
+	// loop over the new lines
+	for i, nextNumber := range lines {
+		if i == 0 {
+			finalNumber = nextNumber
+			continue
+		}
+		fmt.Println(finalNumber)
+
 		// Add next number
-		add()
+		finalNumber = add(finalNumber, nextNumber)
 
 		for {
 			var clear1, clear2 bool
 
 			// First, check for nested pairs to explode. Explode if nested in 4 pairs
-			nested := lookForNestedPairs(finalNumber)
-			if nested == 0 {
+			nestedLocation := lookForNestedPairs(finalNumber)
+			if nestedLocation == 0 {
 				clear1 = true
+			} else {
+				// You are here
+				finalNumber = explode(finalNumber, nestedLocation)
 			}
 
+
 			// Second, check for splits. Split if any number > 10
-			location := lookForBigNumbers()
-			if location == 0 {
+			bigNumLocation := lookForBigNumbers(finalNumber)
+			if len(bigNumLocation) == 0 {
 				clear2 = true
 			}
+			// TODO: if found big num what
+
 			if clear1 == true && clear2 == true {
 				break
 			}
 		}
 	}
 
+	fmt.Println(finalNumber)
 }
 
-func add() {
+func add(finalNumber, nextNumber string) string {
+	finalNumber = fmt.Sprintf("[%s,%s]", finalNumber, nextNumber)
 
+	return finalNumber
 }
 
-func explode() {
+// You are here:
+func explode(finalNumber, nestedLocation) string {
 
 }
 
@@ -52,27 +70,29 @@ func split() {
 
 }
 
-func lookForBigNumbers(snailfishNumber string) int {
+func lookForBigNumbers(snailfishNumber string) []int {
 	// Parse string to []byte to get accepted by regexp.MustCompile
 	content := []byte(snailfishNumber)
 
-	// Find all numbers bigger than 9
+	// RegExp to find the first number bigger than 9
 	pattern := regexp.MustCompile(`[1-9][0-9]`)
 	loc := pattern.FindIndex(content)
-	fmt.Println(loc)
-	fmt.Println(string(content[loc[0]:loc[1]]))
+	// fmt.Println(loc)
+	// fmt.Println(string(content[loc[0]:loc[1]]))
+
+	return loc
 }
 
 func lookForNestedPairs(snailfishNumber string) int {
 	// Check for nested pairs
-	// Returns the location of the left number needing to explode
 	leftBracket := 0
 	for i, ch := range snailfishNumber {
 		if ch == '[' {
 			leftBracket++
 		}
-
+		
 		if leftBracket == 5 {
+			// Returns the location of the left number of the pair needing to explode
 			return i+1
 		}
 
