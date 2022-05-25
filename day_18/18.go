@@ -20,12 +20,14 @@ func selector(lines []string) {
 	for i, nextNumber := range lines {
 		if i == 0 {
 			finalNumber = nextNumber
+			fmt.Println(finalNumber)
+
 			continue
 		}
-		fmt.Println(finalNumber)
 
 		// Add next number
 		finalNumber = add(finalNumber, nextNumber)
+		fmt.Println(finalNumber)
 
 		// Reduce number
 		finalNumber = reduce(finalNumber)
@@ -54,6 +56,7 @@ func reduce(finalNumber string) string {
 			finalNumber = explode(finalNumber, nestedLocation)
 		}
 
+		break
 
 		// Second, check for splits. Split if any number > 10
 		bigNumLocation := lookForBigNumbers(finalNumber)
@@ -92,10 +95,36 @@ func explode(finalNumber string, nestedLocation int) string {
 				explodedNumber = finalNumber[:i-1]
 				explodedNumber += "0"
 				explodedNumber += finalNumber[i:]
+			} else {
+				// Grab the rightmost one
+				indexLeft := findNumbersLeft[len(findNumbersLeft)-1][0]
+				candidateLeft, err := strconv.Atoi(string(finalNumber[indexLeft])); if err != nil{panic(err)}
+				candidateLeft += explodingNumber
+
+				explodedNumber = finalNumber[:i-1]
+				explodedNumber += strconv.Itoa(candidateLeft)
+				explodedNumber += finalNumber[i:]				
 			}
 
 			// Explode right
-			findNumbersRight := lookForNumbers(finalNumber[i:])
+			// fmt.Println(finalNumber[i+1:])
+			workingSlice := finalNumber[i+1:]
+			findNumbersRight := lookForNumbers(finalNumber[i+1:])
+			if len(findNumbersRight) == 0 {
+				explodedNumber = finalNumber[:i-1]
+				explodedNumber += "0"
+				explodedNumber += finalNumber[i:]
+			} else {
+				// Grab the leftmost one
+				indexRight := findNumbersRight[0][0]
+				// fmt.Println(findNumbersRight)
+				candidateRight, err := strconv.Atoi(string(workingSlice[indexRight])); if err != nil{panic(err)}
+				candidateRight += explodingNumber
+
+				explodedNumber = finalNumber[:i-1]
+				explodedNumber += strconv.Itoa(candidateRight)
+				explodedNumber += finalNumber[i:]	
+			}
 
 		}
 	}
