@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"strings"
 	"regexp"
+	"strconv"
 )
 
 func main() {
@@ -13,9 +14,9 @@ func main() {
 
 func selector(lines []string) {
 	var finalNumber string
-	// Select between addition, exploding or splitting
+	// Select between addition or reduction (exploding or splitting)
 
-	// loop over the new lines
+	// loop over the new numbers
 	for i, nextNumber := range lines {
 		if i == 0 {
 			finalNumber = nextNumber
@@ -26,48 +27,95 @@ func selector(lines []string) {
 		// Add next number
 		finalNumber = add(finalNumber, nextNumber)
 
-		for {
-			var clear1, clear2 bool
+		// Reduce number
+		finalNumber = reduce(finalNumber)
 
-			// First, check for nested pairs to explode. Explode if nested in 4 pairs
-			nestedLocation := lookForNestedPairs(finalNumber)
-			if nestedLocation == 0 {
-				clear1 = true
-			} else {
-				// You are here
-				finalNumber = explode(finalNumber, nestedLocation)
-			}
-
-
-			// Second, check for splits. Split if any number > 10
-			bigNumLocation := lookForBigNumbers(finalNumber)
-			if len(bigNumLocation) == 0 {
-				clear2 = true
-			}
-			// TODO: if found big num what
-
-			if clear1 == true && clear2 == true {
-				break
-			}
-		}
+		// Repeat
 	}
 
 	fmt.Println(finalNumber)
 }
 
 func add(finalNumber, nextNumber string) string {
-	finalNumber = fmt.Sprintf("[%s,%s]", finalNumber, nextNumber)
+	return fmt.Sprintf("[%s,%s]", finalNumber, nextNumber)
+}
+
+func reduce(finalNumber string) string {
+	// Loop through the number until no more reductions can be done
+	for {
+		var clear1, clear2 bool
+
+		// First, check for nested pairs to explode. Explode pair if pair is nested inside 4 pairs
+		nestedLocation := lookForNestedPairs(finalNumber)
+		if nestedLocation == 0 {
+			clear1 = true
+		} else {
+			// You are here
+			finalNumber = explode(finalNumber, nestedLocation)
+		}
+
+
+		// Second, check for splits. Split if any number > 10
+		bigNumLocation := lookForBigNumbers(finalNumber)
+		if len(bigNumLocation) == 0 {
+			clear2 = true
+		}
+		// TODO: if found big num what
+
+		if clear1 == true && clear2 == true {
+			break
+		}
+	}
 
 	return finalNumber
 }
 
-// You are here:
-func explode(finalNumber, nestedLocation) string {
+func explode(finalNumber string, nestedLocation int) string {
+	// nested location is the location of the left number to explode
+	explodedNumber := ""
 
+	// [[[[[9 , 8],1],2],3],4] becomes [[[[ 0 ,  9 ],2],3],4]
+	// [[[[[%s,%s],1],2],3],4] becomes [[[[ 0 , 8+1],2],3],4]
+
+	// [[3,[2,[ 1 ,[  7 ,  3  ]]]],[  6 ,[5,[4,[3,2]]]]] becomes [[3,[2,[  8 ,  0  ]]],[  9  ,[5,[4,[3,2]]]]]
+	// [[3,[2,[ 1 ,[ %s ,  %s ]]]],[  6 ,[5,[4,[3,2]]]]] becomes [[3,[2,[ 1+7,  0  ]]],[ 3+6 ,[5,[4,[3,2]]]]]
+	//        ^ ^     ^ ,  ^          ^		   			 becomes        ^  ^ ,  ^         ^  ^
+	// original first num , second num original        becomes   o    first num , second num original
+
+	for i, ch := range finalNumber {
+		if i == nestedLocation {
+			explodingNumber, err := strconv.Atoi(string(ch)); if err != nil { panic(err) }
+
+			// Explode left
+			findNumbersLeft := lookForNumbers(finalNumber[:i])
+			if len(findNumbersLeft) == 0 {
+				explodedNumber = finalNumber[:i-1]
+				explodedNumber += "0"
+				explodedNumber += finalNumber[i:]
+			}
+
+			// Explode right
+			findNumbersRight := lookForNumbers(finalNumber[i:])
+
+		}
+	}
+
+	return explodedNumber
 }
 
 func split() {
 
+}
+
+func lookForNumbers(snailfishNumber string) [][]int {
+	// Parse string to []byte to get accepted by regexp.MustCompile
+	content := []byte(snailfishNumber)
+
+	// RegExp to find all the numbers inside the slice of the number
+	pattern := regexp.MustCompile(`[0-9]`)
+	loc := pattern.FindAllIndex(content, -1)
+
+	return loc
 }
 
 func lookForBigNumbers(snailfishNumber string) []int {
