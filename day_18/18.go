@@ -48,12 +48,12 @@ func reduce(finalNumber string) string {
 		var clear1, clear2 bool
 
 		// First, check for nested pairs to explode. Explode pair if pair is nested inside 4 pairs
-		nestedLocation := lookForNestedPairs(finalNumber)
-		if nestedLocation == 0 {
+		nestedLocationLeft, nestedLocationRight := lookForNestedPairs(finalNumber)
+		if nestedLocationLeft == 0 {
 			clear1 = true
 		} else {
 			// You are here
-			finalNumber = explode(finalNumber, nestedLocation)
+			finalNumber = explode(finalNumber, nestedLocationLeft, nestedLocationRight)
 		}
 
 		break
@@ -73,62 +73,28 @@ func reduce(finalNumber string) string {
 	return finalNumber
 }
 
-func explode(finalNumber string, nestedLocation int) string {
-	// nested location is the location of the left number to explode
-	explodedNumber := ""
+func explode(finalNumber string, nestedLocationLeft, nestedLocationRight int) string {
+	// nested left and nested right are the locations of the numbers to "explode"
+	// nested left -1 is the left bracket, right + 1 the right one
 
-	// [[[[[9 , 8],1],2],3],4] becomes [[[[ 0 ,  9 ],2],3],4]
-	// [[[[[%s,%s],1],2],3],4] becomes [[[[ 0 , 8+1],2],3],4]
+	// Transform to nums to sum with the next numbers on the sides, if any
+	explodingLeft, err := strconv.Atoi(string(finalNumber[nestedLocationLeft:nestedLocationRight][2])); if err != nil{panic(err)}
+	explodingRight, err := strconv.Atoi(string(finalNumber[nestedLocationLeft:nestedLocationRight][4])); if err != nil{panic(err)}
+	fmt.Println(explodingLeft, explodingRight)
 
-	// [[3,[2,[ 1 ,[  7 ,  3  ]]]],[  6 ,[5,[4,[3,2]]]]] becomes [[3,[2,[  8 ,  0  ]]],[  9  ,[5,[4,[3,2]]]]]
-	// [[3,[2,[ 1 ,[ %s ,  %s ]]]],[  6 ,[5,[4,[3,2]]]]] becomes [[3,[2,[ 1+7,  0  ]]],[ 3+6 ,[5,[4,[3,2]]]]]
-	//        ^ ^     ^ ,  ^          ^		   			 becomes        ^  ^ ,  ^         ^  ^
-	// original first num , second num original        becomes   o    first num , second num original
+	explodedLeft := finalNumber[:nestedLocationLeft]
+	explodedRight := finalNumber[nestedLocationRight:]
 
-	for i, ch := range finalNumber {
-		if i == nestedLocation {
-			explodingNumber, err := strconv.Atoi(string(ch)); if err != nil { panic(err) }
+	// [[[[  [1,1],[2,2]],[3,3]],[4,4]],[5,5]]
+	// [[[[   0   ,[3,2]],[3,3]],[4,4]],[5,5]]
+	// [[[[   3   ,     ],[5,3]],[4,4]],[5,5]]
+	// [[[[   3   ,    0],[5,3]],[4,4]],[5,5]]
 
-			// Explode left
-			findNumbersLeft := lookForNumbers(finalNumber[:i])
-			if len(findNumbersLeft) == 0 {
-				explodedNumber = finalNumber[:i-1]
-				explodedNumber += "0"
-				explodedNumber += finalNumber[i:]
-			} else {
-				// Grab the rightmost one
-				indexLeft := findNumbersLeft[len(findNumbersLeft)-1][0]
-				candidateLeft, err := strconv.Atoi(string(finalNumber[indexLeft])); if err != nil{panic(err)}
-				candidateLeft += explodingNumber
+	// [[[[  [4,3] ,4  ],4],[7,[[8,4],9]]],[1,1]]
+	// [[[[   0,    7  ],4],[7,[[8,4],9]]],[1,1]]
+	explodedMiddle := ""
 
-				explodedNumber = finalNumber[:i-1]
-				explodedNumber += strconv.Itoa(candidateLeft)
-				explodedNumber += finalNumber[i:]				
-			}
-
-			// Explode right
-			// fmt.Println(finalNumber[i+1:])
-			workingSlice := finalNumber[i+1:]
-			findNumbersRight := lookForNumbers(finalNumber[i+1:])
-			if len(findNumbersRight) == 0 {
-				explodedNumber = finalNumber[:i-1]
-				explodedNumber += "0"
-				explodedNumber += finalNumber[i:]
-			} else {
-				// Grab the leftmost one
-				indexRight := findNumbersRight[0][0]
-				// fmt.Println(findNumbersRight)
-				candidateRight, err := strconv.Atoi(string(workingSlice[indexRight])); if err != nil{panic(err)}
-				candidateRight += explodingNumber
-
-				explodedNumber = finalNumber[:i-1]
-				explodedNumber += strconv.Itoa(candidateRight)
-				explodedNumber += finalNumber[i:]	
-			}
-
-		}
-	}
-
+	explodedNumber := explodedLeft + explodedMiddle + explodedRight 
 	return explodedNumber
 }
 
@@ -160,7 +126,7 @@ func lookForBigNumbers(snailfishNumber string) []int {
 	return loc
 }
 
-func lookForNestedPairs(snailfishNumber string) int {
+func lookForNestedPairs(snailfishNumber string) (int, int) {
 	// Check for nested pairs
 	leftBracket := 0
 	for i, ch := range snailfishNumber {
@@ -169,8 +135,9 @@ func lookForNestedPairs(snailfishNumber string) int {
 		}
 		
 		if leftBracket == 5 {
-			// Returns the location of the left number of the pair needing to explode
-			return i+1
+			// Returns the location of the left bracket of the pair needing to explode
+			// and the location of the comma afterwards
+			return i-1, i+6
 		}
 
 		if ch == ']' {
@@ -178,7 +145,7 @@ func lookForNestedPairs(snailfishNumber string) int {
 		}
 	}
 
-	return 0
+	return 0, 0
 }
 
 func getInput(filename string) []string {
