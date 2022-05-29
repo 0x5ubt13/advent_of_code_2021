@@ -78,9 +78,11 @@ func explode(finalNumber string, nestedLocationLeft, nestedLocationRight int) st
 	// nested left -1 is the left bracket, right + 1 the right one
 
 	// Transform to nums to sum with the next numbers on the sides, if any
-	explodingLeft, err := strconv.Atoi(string(finalNumber[nestedLocationLeft:nestedLocationRight][2])); if err != nil{panic(err)}
-	explodingRight, err := strconv.Atoi(string(finalNumber[nestedLocationLeft:nestedLocationRight][4])); if err != nil{panic(err)}
-	fmt.Println(explodingLeft, explodingRight)
+	explodingLeft, err := strconv.Atoi(string(finalNumber[nestedLocationLeft:nestedLocationRight][1])); if err != nil{panic(err)}
+	explodingRight, err := strconv.Atoi(string(finalNumber[nestedLocationLeft:nestedLocationRight][3])); if err != nil{panic(err)}
+	
+	fmt.Printf("Extracted: %v\n", finalNumber[nestedLocationLeft:nestedLocationRight])
+	fmt.Printf("Numbers to work with: left: %d right: %d\n", explodingLeft, explodingRight)
 
 	explodedLeft := finalNumber[:nestedLocationLeft]
 	explodedRight := finalNumber[nestedLocationRight:]
@@ -93,8 +95,23 @@ func explode(finalNumber string, nestedLocationLeft, nestedLocationRight int) st
 	// [[[[  [4,3] ,4  ],4],[7,[[8,4],9]]],[1,1]]
 	// [[[[   0,    7  ],4],[7,[[8,4],9]]],[1,1]]
 	explodedMiddle := ""
+	
+	// If no number left, plant a 0, else add the rightmost
+	checkNumbersLeft := lookForNumbers(explodedLeft)
+	if len(checkNumbersLeft) == 0 {
+		explodedMiddle += "0"
+	} else {
+		// find the rightmost, convert to int and add exploding one
 
-	explodedNumber := explodedLeft + explodedMiddle + explodedRight 
+	}
+
+	checkNumbersRight := lookForNumbers(explodedRight)
+		// If no number right, plant a 0
+		if len(checkNumbersRight) == 0 {
+			explodedMiddle += "0"
+		}
+
+	explodedNumber := explodedLeft + " " + explodedMiddle + " " + explodedRight 
 	return explodedNumber
 }
 
@@ -137,7 +154,7 @@ func lookForNestedPairs(snailfishNumber string) (int, int) {
 		if leftBracket == 5 {
 			// Returns the location of the left bracket of the pair needing to explode
 			// and the location of the comma afterwards
-			return i-1, i+6
+			return i, i+5
 		}
 
 		if ch == ']' {
