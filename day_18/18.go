@@ -55,12 +55,22 @@ func reduce(finalNumber string) string {
 		var clear1, clear2 bool
 
 		// First, check for nested pairs to explode. Explode pair if pair is nested inside 4 pairs
-		nestedLocationLeft, nestedLocationRight := lookForNestedPairs(finalNumber)
+		nestedLocationLeft, _ := lookForNestedPairs(finalNumber)
 		// pointer = nestedLocationRight
 		if nestedLocationLeft == 0 {
 			clear1 = true
 		} else {
 			fmt.Println(finalNumber)
+			// finalNumber = explode(finalNumber, nestedLocationLeft, nestedLocationRight)
+			
+			left, right := extractNestedSlice(finalNumber)
+			bigNumLocation := lookForBigNumbers(finalNumber[left:right])
+			if len(bigNumLocation) != 0 {
+				bigNumLocation := lookForBigNumbers(finalNumber)
+				finalNumber = split(finalNumber, bigNumLocation)
+			} 
+			nestedLocationLeft, nestedLocationRight := lookForNestedPairs(finalNumber)
+			// finalNumber = explode(finalNumber, left, right)
 			finalNumber = explode(finalNumber, nestedLocationLeft, nestedLocationRight)
 		}
 
@@ -177,9 +187,36 @@ func split(finalNumber string, bigNumLocation []int) string {
 	}
 }
 
-func extractNestedSlice() {
+func extractNestedSlice(snailfishNumber string) (int, int) {
 	// work on the level of the nested pair to avoid crashing the program
+	begin := 0
+	nesting := 0
 	
+	for i, ch := range snailfishNumber {
+		if ch == '[' {
+			begin++
+		} 
+
+		if ch == ']' {
+			begin--
+		}
+
+		if begin == 5 {
+			for j, ch2 := range snailfishNumber[i:] {
+				if ch2 == '[' {
+					nesting++
+				}
+				if ch2 == ']' {
+					if nesting == 0 {
+						return i, i+j
+					}
+					nesting--
+				}
+			}
+		}
+	}
+
+	return 0, 0
 }
 
 func lookForNumbers(snailfishNumber string) [][]int {
